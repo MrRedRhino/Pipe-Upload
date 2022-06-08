@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload</title>
+</head>
+<body>
+<input type="file" id="file-selector" multiple>
+
+<script>
+    const fileSelector = document.getElementById('file-selector');
+
+    fileSelector.addEventListener('change', (e) => {
+        uploadFile(e.target.files[0]);
+    });
+
+    function uploadFile(file) {
+        const fileReader = new FileReader();
+        fileReader.readAsArrayBuffer(file);
+        fileReader.onloadend = (evt) => {
+            if (evt.target.readyState === FileReader.DONE) {
+                const arrayBuffer = evt.target.result;
+
+                fetch("/api/upload/create", {
+                    method: "POST",
+                    headers: {
+                        "filename": "video.mp4",
+                        "directory": "hello/videos"
+                    }
+                }).then(response => response.json().then(async result => {
+                    const uploadID = result["upload-id"];
+
+                    // upload chunks
+                    const bufferSize = 2_097_152; // 1_048_576
+                    for (let i = 0; i < arrayBuffer.byteLength; i += bufferSize) {
+                        await fetch("/api/upload/upload/" + uploadID, {
+                            method: "POST",
+                            body: arrayBuffer.slice(i, i + bufferSize)
+                        });
+                    }
+
+                    await fetch("/api/upload/finish/" + uploadID, {
+                        method: "POST"
+                    });
+                }));
+            }
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pipe-DL Login</title>
+    <style>
+        .center {
+            right: 50%;
+            bottom: 50%;
+            transform: translate(50%,50%);
+            position: absolute;
+        }
+        .button {
+            height: 30px;
+            margin-bottom: 10px;
+            width: 300px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="center">
+    <h1 style="text-align: center; color: forestgreen; font-family: Arial, serif">Pipe-Download</h1>
+    <input class="button" id="username_field" type="text" placeholder="Username / E-Mail">
+    <br>
+    <input class="button" id="password_field" type="password" placeholder="Password">
+    <br>
+    <input class="button" type="button" value="Login" onclick="login()">
+<!--    <br>-->
+</div>
+</body>
+<script>
+    function login() {
+        fetch("/api/accounts/login", {
+            headers: {
+                "email": document.getElementById("username_field").value,
+                "password": document.getElementById("password_field").value
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                response.json().then(json => {
+                    document.cookie = "login = " + json["session-id"];
+                    location.href = "/accounts/logged-in";
+                })
+            } else {
+                console.log("Invalid login");
+            }
+        })
+
+        // const user = document.getElementById("username_field").value;
+        // const pwd = document.getElementById("password_field").value;
+        //
+        // const href = window.location.href;
+        // const i1 = href.indexOf("?redirect=");
+        // const i2 = href.indexOf("&redirect=");
+        // const newUrl = i1 === -1 ? i2 === -1 ? href : href.substring(i2 + 10) : href.substring(i1 + 10);
+        //
+        // window.location.replace(newUrl);
+    }
+</script>
+</html>
