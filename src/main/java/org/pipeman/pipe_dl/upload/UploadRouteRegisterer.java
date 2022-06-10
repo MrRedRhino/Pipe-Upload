@@ -1,6 +1,10 @@
 package org.pipeman.pipe_dl.upload;
 
 import org.pipeman.pipe_dl.Config;
+import org.pipeman.pipe_dl.files.FileHelper;
+import org.pipeman.pipe_dl.files.PipeFile;
+import org.pipeman.pipe_dl.login.Account;
+import org.pipeman.pipe_dl.login.AccountHelper;
 import org.pipeman.pipe_dl.upload_page.UploadPage;
 import org.pipeman.pipe_dl.upload_page.UploadPageHelper;
 import org.pipeman.pipe_dl.util.routes.PipeRouteBuilder;
@@ -12,8 +16,8 @@ import spark.Response;
 
 import java.io.*;
 
-public class UploadManager {
-    public UploadManager() {
+public class UploadRouteRegisterer {
+    public UploadRouteRegisterer() {
         registerRoutes();
         //noinspection ResultOfMethodCallIgnored
         new File(Config.Upload.UPLOAD_DIRECTORY).mkdirs();
@@ -53,26 +57,28 @@ public class UploadManager {
     private String startUpload(Request request, Response response) throws IOException {
         String filename = request.headers("filename");
         String directory = request.headers("folder-id");
-        String page = request.headers("upload-page-id");
 
-        if (filename == null || filename.isBlank() || directory == null || directory.isBlank() || page == null || page.isBlank()) {
-            return RouteUtil.msg("Request headers 'filename', 'upload-page-id' and 'directory' are required",
-                    response, 400);
+        if (filename == null || filename.isBlank() || directory == null || directory.isBlank()) {
+            return RouteUtil.msg("Request headers 'filename' and 'folder-id' are required", response, 400);
         }
 
-        long uploadPageId;
+        long dirId;
         try {
-            uploadPageId = Long.parseLong(page);
+            dirId = Long.parseLong(directory);
         } catch (NumberFormatException ignored) {
-            return RouteUtil.msg("Header 'upload-page-id' invalid");
+            return RouteUtil.msg("Header 'folder-id' invalid");
         }
 
-        UploadPage uploadPage = UploadPageHelper.fetch(uploadPageId);
-        if (uploadPage == null) {
-            return RouteUtil.msg("Upload page not found", response, 400);
+        Account account = AccountHelper.getAccountByRequest(request);
+        if (account == null) {
+            return RouteUtil.msg("Authorisation incorrect", response, 400);
         }
 
-        String uploadId = UploadHelper.createUpload(filename, directory, uploadPage);
+        PipeFile dir = FileHelper.getFile(dirId);
+        if (dir == null) return RouteUtil.msg("Directory not found", response, 400);
+        if (!dir.isFolder()) return RouteUtil.msg("Folder-id is not a directory", response, 400);
+
+        String uploadId = UploadHelper.createUpload(filename, dir, account.id());
         return "{\"upload-id\": \"" + uploadId + "\"}";
     }
 

@@ -4,14 +4,12 @@ import org.json.JSONObject;
 import org.pipeman.pipe_dl.Config;
 import org.pipeman.pipe_dl.util.ModifiableFileHelper;
 import org.pipeman.pipe_dl.util.routes.*;
-import spark.Request;
-import spark.Response;
 
 import java.util.Map;
 
-public class LoginHandler {
+public class LoginRouteRegisterer {
 
-    public LoginHandler() {
+    public LoginRouteRegisterer() {
         registerRoutes();
     }
 
@@ -43,7 +41,7 @@ public class LoginHandler {
         new PipeRouteBuilder("/accounts/logged-in")
                 .checkAuth()
                 .handle((request, response) -> {
-                    Account account = AccountHelper.getAccountBySessionId(request.cookie("login"));
+                    Account account = AccountHelper.getAccountByRequest(request);
                     ModifiableFileHelper.copyFile(Config.HtmlFiles.LOGGED_IN, response,
                             Map.of("!username", account.name));
 
