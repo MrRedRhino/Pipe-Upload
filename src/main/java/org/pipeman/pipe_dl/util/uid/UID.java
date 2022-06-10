@@ -18,7 +18,7 @@ public class UID {
 
     public UID(SnowflakeIdGenerator generator) {
         this.generator = generator;
-        printData();
+//        printData();
     }
 
     public UID(int generatorId, Structure structure) {

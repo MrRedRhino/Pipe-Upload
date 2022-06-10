@@ -30,7 +30,18 @@ public class AccountHelper {
         return null;
     }
 
-    public static Account getAccountBySessionId(String id) {
+    public static Account getAccountByRequest(Request request) {
+        String cookie = request.cookie("login");
+        String header = request.headers("auth");
+
+        if (cookie == null) {
+            return getAccountBySessionId(header);
+        } else {
+            return getAccountBySessionId(cookie);
+        }
+    }
+
+    private static Account getAccountBySessionId(String id) {
         if (id == null) return null;
         for (SessionID sessionID : sessionIDs) {
             if (id.equals(sessionID.id())) {

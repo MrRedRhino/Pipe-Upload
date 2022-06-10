@@ -18,6 +18,10 @@ public class Account {
         this.email = email;
     }
 
+    public long id() {
+        return id;
+    }
+
     public static Account fromResultSet(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
             int i = 1;

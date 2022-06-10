@@ -24,8 +24,8 @@
                 fetch("/api/upload/create", {
                     method: "POST",
                     headers: {
-                        "filename": "video.mp4",
-                        "directory": "hello/videos"
+                        "filename": file.name,
+                        "folder-id": "1"
                     }
                 }).then(response => response.json().then(async result => {
                     const uploadID = result["upload-id"];

@@ -3,9 +3,6 @@ package org.pipeman.pipe_dl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 public class DB {
     private static HikariDataSource ds;
 
