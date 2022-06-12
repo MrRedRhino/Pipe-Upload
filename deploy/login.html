@@ -11,26 +11,68 @@
             position: absolute;
         }
 
-        .button {
+        .text-input {
             height: 30px;
             margin-bottom: 10px;
             width: 300px;
             font-size: 20px;
+            border: none;
+            background: lightgrey;
+            border-radius: 5px;
+        }
+
+        .text-input:hover {
+            opacity: 80%;
+        }
+
+        .button {
+            margin-bottom: 15px;
+            box-shadow: 0 9px #999;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #3e8e41
+        }
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+        /*THIS IS USED!, INTELLIJ*/
+        .password-wrong {
+            color: red;
+        }
+
+        h5 {
+            font-family: Arial, serif;
+            color: darkgray;
+            margin-bottom: 5px;
+            margin-top: 0;
         }
     </style>
 </head>
 <body>
 <div class="center">
-    <h1 style="text-align: center; color: forestgreen; font-family: Arial, serif">Pipe-Download</h1>
-    <input class="button" id="username_field" type="text" placeholder="Username / E-Mail">
+    <h1 style="text-align: center; color: forestgreen; font-family: Arial, serif">Pipe-Share</h1>
+    <h5 id="email-header">E-Mail</h5>
+    <input class="text-input" id="username_field" type="text">
+    <h5 id="password-header">Password</h5>
+    <input class="text-input" id="password_field" type="password">
     <br>
-    <input class="button" id="password_field" type="password" placeholder="Password">
     <br>
-    <input class="button" type="button" value="Login" onclick="login()">
-    <!--    <br>-->
+    <input style="background-color: forestgreen; color: lightgrey" class="text-input button" type="button" value="Login"
+           onclick="login()">
+    <br>
+    <input style="background-color: lightgrey; color: forestgreen" class="text-input button" type="button"
+           value="Register" onclick="location.href = '/accounts/register'">
 </div>
 </body>
 <script>
+    document.getElementById("password_field").addEventListener("click", () => loginFailed(false));
+
     function login() {
         fetch("/api/accounts/login", {
             headers: {
@@ -44,19 +86,26 @@
                     location.href = "/accounts/logged-in";
                 })
             } else {
-                console.log("Invalid login");
+                loginFailed(true);
             }
         })
+    }
 
-        // const user = document.getElementById("username_field").value;
-        // const pwd = document.getElementById("password_field").value;
-        //
-        // const href = window.location.href;
-        // const i1 = href.indexOf("?redirect=");
-        // const i2 = href.indexOf("&redirect=");
-        // const newUrl = i1 === -1 ? i2 === -1 ? href : href.substring(i2 + 10) : href.substring(i1 + 10);
-        //
-        // window.location.replace(newUrl);
+    function loginFailed(fail) {
+        const email_header = document.getElementById("email-header");
+        const pwd_header = document.getElementById("password-header");
+
+        if (fail) {
+            email_header.classList.add("password-wrong");
+            pwd_header.classList.add("password-wrong");
+            pwd_header.innerHTML = "Password or E-Mail is wrong";
+            email_header.innerHTML = "Password or E-Mail is wrong";
+        } else {
+            email_header.classList.remove("password-wrong");
+            pwd_header.classList.remove("password-wrong");
+            pwd_header.innerHTML = "Password";
+            email_header.innerHTML = "E-Mail";
+        }
     }
 </script>
 </html>
