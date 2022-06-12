@@ -5,13 +5,19 @@
     <title>Upload</title>
 </head>
 <body>
+
+<progress value="90" max="100">Hi</progress>
 <input type="file" id="file-selector" multiple>
 
 <script>
     const fileSelector = document.getElementById('file-selector');
+    const files = [];
 
     fileSelector.addEventListener('change', (e) => {
-        uploadFile(e.target.files[0]);
+        for (let file of e.target.files) {
+            files.push(file);
+        }
+        uploadFile(files[0]);
     });
 
     function uploadFile(file) {
@@ -25,9 +31,13 @@
                     method: "POST",
                     headers: {
                         "filename": file.name,
-                        "folder-id": "1"
+                        "folder-id": 1
                     }
                 }).then(response => response.json().then(async result => {
+                    if (response.status !== 200) {
+                        // upload failed
+                        return;
+                    }
                     const uploadID = result["upload-id"];
 
                     // upload chunks

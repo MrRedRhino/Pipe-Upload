@@ -1,4 +1,4 @@
-package org.pipeman.pipe_dl.login;
+package org.pipeman.pipe_dl.users.login;
 
 import org.json.JSONObject;
 import org.pipeman.pipe_dl.Config;
@@ -41,9 +41,9 @@ public class LoginRouteRegisterer {
         new PipeRouteBuilder("/accounts/logged-in")
                 .checkAuth()
                 .handle((request, response) -> {
-                    Account account = AccountHelper.getAccountByRequest(request);
+                    User user = AccountHelper.getAccountByRequest(request);
                     ModifiableFileHelper.copyFile(Config.HtmlFiles.LOGGED_IN, response,
-                            Map.of("!username", account.name));
+                            Map.of("!username", user.name));
 
                     return "";
                 }).buildAndRegister();

@@ -43,7 +43,7 @@ public class DownloadRouteRegisterer {
                     ));
 
                     return "";
-                }).buildAndRegister();
+                }).buildAndRegister(); // wss://gateway.discord.gg/?encoding=json&v=9&compress=zlib-stream
     }
 
     private String handleDownload(Request request, Response response) throws IOException {

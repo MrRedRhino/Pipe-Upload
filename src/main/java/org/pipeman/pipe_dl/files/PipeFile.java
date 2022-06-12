@@ -2,6 +2,7 @@ package org.pipeman.pipe_dl.files;
 
 import org.pipeman.pipe_dl.Config;
 
+import java.beans.ConstructorProperties;
 import java.io.File;
 
 public class PipeFile {
@@ -12,6 +13,7 @@ public class PipeFile {
     private final long creatorId;
     private final boolean isFolder;
 
+    @ConstructorProperties({"id", "name", "page_id", "directory_id", "creator_id", "is_folder"})
     public PipeFile(long id, String name, long pageId, long directoryId, long creatorId, boolean isFolder) {
         this.id = id;
         this.name = name;

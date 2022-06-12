@@ -3,10 +3,8 @@ package org.pipeman.pipe_dl.upload;
 import org.pipeman.pipe_dl.Config;
 import org.pipeman.pipe_dl.files.FileHelper;
 import org.pipeman.pipe_dl.files.PipeFile;
-import org.pipeman.pipe_dl.login.Account;
-import org.pipeman.pipe_dl.login.AccountHelper;
-import org.pipeman.pipe_dl.upload_page.UploadPage;
-import org.pipeman.pipe_dl.upload_page.UploadPageHelper;
+import org.pipeman.pipe_dl.users.login.User;
+import org.pipeman.pipe_dl.users.login.AccountHelper;
 import org.pipeman.pipe_dl.util.routes.PipeRouteBuilder;
 import org.pipeman.pipe_dl.util.routes.RequestMethod;
 import org.pipeman.pipe_dl.util.routes.RoutePrefixes;
@@ -69,8 +67,8 @@ public class UploadRouteRegisterer {
             return RouteUtil.msg("Header 'folder-id' invalid");
         }
 
-        Account account = AccountHelper.getAccountByRequest(request);
-        if (account == null) {
+        User user = AccountHelper.getAccountByRequest(request);
+        if (user == null) {
             return RouteUtil.msg("Authorisation incorrect", response, 400);
         }
 
@@ -78,7 +76,7 @@ public class UploadRouteRegisterer {
         if (dir == null) return RouteUtil.msg("Directory not found", response, 400);
         if (!dir.isFolder()) return RouteUtil.msg("Folder-id is not a directory", response, 400);
 
-        String uploadId = UploadHelper.createUpload(filename, dir, account.id());
+        String uploadId = UploadHelper.createUpload(filename, dir, user.id());
         return "{\"upload-id\": \"" + uploadId + "\"}";
     }
 
