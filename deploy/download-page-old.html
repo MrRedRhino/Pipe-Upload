@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>!title</title>
+</head>
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        width: 100%;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>
+<body>
+<table>
+    <colgroup>
+        <col style="width: min-content;">
+        <col style="color: red">
+    </colgroup>
+    <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Size</th>
+    </tr>
+    !table-content
+</table>
+</body>
+</html>
