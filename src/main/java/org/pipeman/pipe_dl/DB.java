@@ -10,9 +10,9 @@ public class DB {
 
     public static void connect() {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(Config.Database.URL);
-        config.setUsername(Config.Database.USERNAME);
-        config.setPassword(Config.Database.PASSWORD);
+        config.setJdbcUrl(Main.config().dbUrl);
+        config.setUsername(Main.config().dbUsername);
+        config.setPassword(Main.config().dbPassword);
         ds = new HikariDataSource(config);
         jdbi = Jdbi.create(ds);
     }

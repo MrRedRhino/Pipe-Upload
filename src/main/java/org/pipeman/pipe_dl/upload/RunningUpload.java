@@ -1,13 +1,10 @@
 package org.pipeman.pipe_dl.upload;
 
-import org.pipeman.pipe_dl.Config;
+import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.files.FileHelper;
 import org.pipeman.pipe_dl.files.PipeFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 
 public class RunningUpload {
     private final String filename;
@@ -26,8 +23,8 @@ public class RunningUpload {
         openFile();
     }
 
-    public void openFile() throws IOException {
-        os = new FileOutputStream(Config.Upload.UPLOAD_DIRECTORY + id);
+    public void openFile() throws FileNotFoundException {
+        os = new FileOutputStream(Main.config().uploadDir + id);
     }
 
     public void writeToFile(byte[] data) throws IOException {
@@ -45,7 +42,7 @@ public class RunningUpload {
         } catch (Exception ignored) {
         }
 
-        File f = new File(Config.Upload.UPLOAD_DIRECTORY + id);
+        File f = new File(Main.config().uploadDir + id);
 
         //noinspection ResultOfMethodCallIgnored
         f.delete();

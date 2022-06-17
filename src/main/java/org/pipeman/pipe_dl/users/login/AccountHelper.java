@@ -51,8 +51,8 @@ public class AccountHelper {
         return null;
     }
 
-    public static boolean logout(String sessionID) {
-        return sessionIDs.removeIf(id -> id.id().equals(sessionID));
+    public static void logout(String sessionID) {
+        sessionIDs.removeIf(id -> id.id().equals(sessionID));
     }
 
     record SessionID(String id, User user) {

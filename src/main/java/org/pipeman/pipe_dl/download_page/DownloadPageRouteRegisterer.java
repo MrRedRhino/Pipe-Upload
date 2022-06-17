@@ -1,6 +1,6 @@
 package org.pipeman.pipe_dl.download_page;
 
-import org.pipeman.pipe_dl.Config;
+import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.files.FileHelper;
 import org.pipeman.pipe_dl.files.PipeFile;
 import org.pipeman.pipe_dl.util.ModifiableFileHelper;
@@ -27,7 +27,7 @@ public class DownloadPageRouteRegisterer {
                         addTableEntry(fileTableBuilder, file);
                     }
 
-                    ModifiableFileHelper.copyFile(Config.HtmlFiles.DOWNLOAD_PAGE, response, Map.of(
+                    ModifiableFileHelper.copyFile(Main.config().downloadPage, response, Map.of(
                             "!title", folderFile.name(),
                             "!table-content", fileTableBuilder.toString()
                     ));
@@ -44,8 +44,6 @@ public class DownloadPageRouteRegisterer {
         builder.append("\">").append(file.name()).append(file.isFolder() ? "/" : "").append("</a></td>\n");
         builder.append("<td>").append("42 GB").append("</td>");
         builder.append("</tr>\n");
-
-
     }
 
 

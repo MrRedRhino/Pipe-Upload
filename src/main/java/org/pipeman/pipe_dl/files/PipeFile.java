@@ -1,6 +1,6 @@
 package org.pipeman.pipe_dl.files;
 
-import org.pipeman.pipe_dl.Config;
+import org.pipeman.pipe_dl.Main;
 
 import java.beans.ConstructorProperties;
 import java.io.File;
@@ -24,7 +24,7 @@ public class PipeFile {
     }
 
     public File toJavaFile() {
-        return new File(Config.Upload.UPLOAD_DIRECTORY + id);
+        return new File(Main.config().uploadDir + id);
     }
 
     public long id() {

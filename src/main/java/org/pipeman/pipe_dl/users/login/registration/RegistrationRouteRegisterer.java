@@ -1,6 +1,6 @@
 package org.pipeman.pipe_dl.users.login.registration;
 
-import org.pipeman.pipe_dl.Config;
+import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.util.routes.PipeRouteBuilder;
 
 public class RegistrationRouteRegisterer {
@@ -10,7 +10,7 @@ public class RegistrationRouteRegisterer {
 
     private void registerRoutes() {
         new PipeRouteBuilder("/accounts/register")
-                .handle(Config.HtmlFiles.REGISTER)
+                .handle(Main.config().register)
                 .buildAndRegister();
     }
 }

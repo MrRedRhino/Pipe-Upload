@@ -1,7 +1,7 @@
 package org.pipeman.pipe_dl.users.login;
 
 import org.json.JSONObject;
-import org.pipeman.pipe_dl.Config;
+import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.util.ModifiableFileHelper;
 import org.pipeman.pipe_dl.util.routes.*;
 
@@ -22,12 +22,12 @@ public class LoginRouteRegisterer {
 
 
         new PipeRouteBuilder("/accounts/login")
-                .handle(Config.HtmlFiles.LOGIN)
+                .handle(Main.config().login)
                 .buildAndRegister();
 
 
         new PipeRouteBuilder("/accounts/logout")
-                .handle(Config.HtmlFiles.LOGOUT)
+                .handle(Main.config().logout)
                 .handle((request, response) -> {
                     String cookie = request.cookie("login");
                     if (cookie != null) {
@@ -42,7 +42,7 @@ public class LoginRouteRegisterer {
                 .checkAuth()
                 .handle((request, response) -> {
                     User user = AccountHelper.getAccountByRequest(request);
-                    ModifiableFileHelper.copyFile(Config.HtmlFiles.LOGGED_IN, response,
+                    ModifiableFileHelper.copyFile(Main.config().loggedIn, response,
                             Map.of("!username", user.name));
 
                     return "";
