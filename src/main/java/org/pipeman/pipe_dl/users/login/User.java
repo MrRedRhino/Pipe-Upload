@@ -2,10 +2,8 @@ package org.pipeman.pipe_dl.users.login;
 
 import org.pipeman.pipe_dl.util.PasswordSpicer;
 
-import javax.management.ConstructorParameters;
 import java.beans.ConstructorProperties;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class User {
     long id;

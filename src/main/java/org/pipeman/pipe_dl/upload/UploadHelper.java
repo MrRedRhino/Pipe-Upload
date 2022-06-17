@@ -1,9 +1,7 @@
 package org.pipeman.pipe_dl.upload;
 
 import org.pipeman.pipe_dl.Main;
-import org.pipeman.pipe_dl.files.FileHelper;
 import org.pipeman.pipe_dl.files.PipeFile;
-import org.pipeman.pipe_dl.upload_page.UploadPage;
 
 import java.io.IOException;
 import java.util.HashMap;

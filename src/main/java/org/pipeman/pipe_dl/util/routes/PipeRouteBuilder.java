@@ -9,7 +9,7 @@ public class PipeRouteBuilder {
     private boolean checkAuth = false;
     private Route handler;
     private Path filePath;
-    private String path;
+    private final String path;
     private String routePrefix = RoutePrefixes.DEFAULT.route;
 
     public PipeRouteBuilder(String path) {

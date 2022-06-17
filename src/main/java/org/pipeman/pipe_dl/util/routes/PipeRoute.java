@@ -5,11 +5,11 @@ import spark.Route;
 import java.nio.file.Path;
 
 public class PipeRoute {
-    RequestMethod requestMethod;
-    boolean checkAuth;
-    Route handler;
-    Path filePath;
-    String path;
+    final RequestMethod requestMethod;
+    final boolean checkAuth;
+    final Route handler;
+    final Path filePath;
+    final String path;
 
     public PipeRoute(RequestMethod requestMethod, boolean checkAuth, Route handler, String path, Path filePath,
                      String routePrefix) {
