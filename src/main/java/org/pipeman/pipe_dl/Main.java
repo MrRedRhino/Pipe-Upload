@@ -1,7 +1,7 @@
 package org.pipeman.pipe_dl;
 
-import config.Config;
-import config.ConfigProvider;
+import org.pipeman.pipe_dl.config.Config;
+import org.pipeman.pipe_dl.config.ConfigProvider;
 import de.mkammerer.snowflakeid.structure.Structure;
 import org.pipeman.pipe_dl.download.DownloadRouteRegisterer;
 import org.pipeman.pipe_dl.users.login.LoginRouteRegisterer;

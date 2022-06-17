@@ -1,4 +1,4 @@
-package config;
+package org.pipeman.pipe_dl.config;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

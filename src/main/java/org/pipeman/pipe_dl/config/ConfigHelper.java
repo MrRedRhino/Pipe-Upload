@@ -1,4 +1,4 @@
-package config;
+package org.pipeman.pipe_dl.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
