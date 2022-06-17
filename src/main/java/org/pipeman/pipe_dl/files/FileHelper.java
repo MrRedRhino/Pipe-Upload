@@ -17,6 +17,16 @@ public class FileHelper {
     }
 
 
+    public static PipeFile getFile(String id) {
+        if (id == null) return null;
+        try {
+            return getFile(Long.parseLong(id));
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
+
+
     public static List<PipeFile> listDir(long directoryId) {
         return jdbi().withHandle(handle -> {
             handle.registerRowMapper(ConstructorMapper.factory(PipeFile.class));

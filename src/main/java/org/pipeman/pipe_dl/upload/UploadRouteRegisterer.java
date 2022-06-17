@@ -1,6 +1,6 @@
 package org.pipeman.pipe_dl.upload;
 
-import org.pipeman.pipe_dl.Config;
+import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.files.FileHelper;
 import org.pipeman.pipe_dl.files.PipeFile;
 import org.pipeman.pipe_dl.users.login.User;
@@ -18,12 +18,12 @@ public class UploadRouteRegisterer {
     public UploadRouteRegisterer() {
         registerRoutes();
         //noinspection ResultOfMethodCallIgnored
-        new File(Config.Upload.UPLOAD_DIRECTORY).mkdirs();
+        new File(Main.config().uploadDir).mkdirs();
     }
 
     private void registerRoutes() {
         new PipeRouteBuilder("/upload")
-                .handle(Config.HtmlFiles.UPLOAD)
+                .handle(Main.config().upload)
                 .buildAndRegister();
 
         new PipeRouteBuilder("/upload/create")
@@ -60,19 +60,12 @@ public class UploadRouteRegisterer {
             return RouteUtil.msg("Request headers 'filename' and 'folder-id' are required", response, 400);
         }
 
-        long dirId;
-        try {
-            dirId = Long.parseLong(directory);
-        } catch (NumberFormatException ignored) {
-            return RouteUtil.msg("Header 'folder-id' invalid");
-        }
-
         User user = AccountHelper.getAccountByRequest(request);
         if (user == null) {
             return RouteUtil.msg("Authorisation incorrect", response, 400);
         }
 
-        PipeFile dir = FileHelper.getFile(dirId);
+        PipeFile dir = FileHelper.getFile(directory);
         if (dir == null) return RouteUtil.msg("Directory not found", response, 400);
         if (!dir.isFolder()) return RouteUtil.msg("Folder-id is not a directory", response, 400);
 

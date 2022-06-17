@@ -1,0 +1,7 @@
+- [ ] Access links  
+- [ ] Permissions (somehow)
+- [ ] Account creation, settings, email verification
+- [ ] Ratelimit
+- [ ] Make upload fancier
+- [ ] Upload limit
+- [ ] Store filesize

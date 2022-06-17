@@ -1,4 +1,4 @@
-package org.pipeman.pipe_dl.upload_page;
+package org.pipeman.pipe_dl.download_page;
 
 import org.pipeman.pipe_dl.DB;
 
