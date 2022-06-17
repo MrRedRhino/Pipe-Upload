@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="true" scanPeriod="10 seconds">
     <property name="LOG_LEVEL" value="info" />
     <conversionRule conversionWord="highlighter" converterClass="org.pipeman.pipe_dl.util.logger.HighlightColorer" />
 
