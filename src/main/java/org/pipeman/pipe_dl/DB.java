@@ -17,6 +17,10 @@ public class DB {
         jdbi = Jdbi.create(ds);
     }
 
+    public static void disconnect() {
+        if (ds != null) ds.close();
+    }
+
     public static Jdbi jdbi() {
         return jdbi;
     }
