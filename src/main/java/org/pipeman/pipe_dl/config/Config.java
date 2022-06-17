@@ -24,10 +24,16 @@ public class Config extends ConfigHelper {
     public final Path downloadPage = this.get("html-download-page", Paths.get("deploy/download-page.html"));
 
 
-    public final String imagesDir = "images";
+    public final String imagesDir = this.get("images-directory", "images");
 
 
-    public final String uploadDir = "usercontent/";
+    public final String uploadDir = this.get("usercontent-directory", "usercontent/");
+
+
+    public final int uidGeneratorId = this.get("uid-generator-id", 1);
+    public final int uidGeneratorTimestamp = this.get("uid-generator-timestamp-bits", 46);
+    public final int uidGeneratorGen = this.get("uid-generator-generator-bits", 6);
+    public final int uidGeneratorSequence = this.get("uid-generator-sequence-bits", 11);
 
 
     public static Config fromFile(Path path) {

@@ -24,12 +24,17 @@ public class Main {
     public static RegistrationRouteRegisterer registrationRouteRegisterer;
     public static ConfigProvider configProvider;
 
-    public static final UID uid = new UID(1, new Structure(46, 6, 11));
+    public static UID uid;
 
     public static void main(String[] args) {
         configProvider = new ConfigProvider(Paths.get("config.properties"));
         configProvider.forceSave();
 
+        uid = new UID(config().uidGeneratorId, new Structure(
+                config().uidGeneratorTimestamp,
+                config().uidGeneratorGen,
+                config().uidGeneratorSequence));
+        
         Spark.port(config().serverPort);
         Spark.init();
 
