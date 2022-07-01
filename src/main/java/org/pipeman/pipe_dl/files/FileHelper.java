@@ -40,13 +40,14 @@ public class FileHelper {
 
     public static void uploadFile(PipeFile file) {
         jdbi().useHandle(handle -> handle.createUpdate("INSERT INTO files (id, name, page_id, directory_id, " +
-                        "creator_id, is_folder) VALUES ((?), (?), (?), (?), (?), (?))")
+                        "creator_id, is_folder, size) VALUES ((?), (?), (?), (?), (?), (?), (?))")
                 .bind(0, file.id())
                 .bind(1, file.name())
                 .bind(2, file.pageId())
                 .bind(3, file.directoryId())
                 .bind(4, file.creatorId())
                 .bind(5, file.isFolder())
+                .bind(6, file.size())
                 .execute());
     }
 }

@@ -12,15 +12,17 @@ public class PipeFile {
     private final long directoryId;
     private final long creatorId;
     private final boolean isFolder;
+    private final long size;
 
-    @ConstructorProperties({"id", "name", "page_id", "directory_id", "creator_id", "is_folder"})
-    public PipeFile(long id, String name, long pageId, long directoryId, long creatorId, boolean isFolder) {
+    @ConstructorProperties({"id", "name", "page_id", "directory_id", "creator_id", "is_folder", "size"})
+    public PipeFile(long id, String name, long pageId, long directoryId, long creatorId, boolean isFolder, long size) {
         this.id = id;
         this.name = name;
         this.pageId = pageId;
         this.directoryId = directoryId;
         this.creatorId = creatorId;
         this.isFolder = isFolder;
+        this.size = size;
     }
 
     public File toJavaFile() {
@@ -49,5 +51,17 @@ public class PipeFile {
 
     public boolean isFolder() {
         return isFolder;
+    }
+
+    public String stringSize() {
+        long size = size();
+        if (size < 1024) return size + " B";
+        if (size < 1024 * 1024) return (size / 1024) + " KB";
+        if (size < 1024 * 1024 * 1024) return (size / 1024 / 1024) + " MB";
+        return (size / 1024 / 1024 / 1024) + " GB";
+    }
+
+    public long size() {
+        return size;
     }
 }

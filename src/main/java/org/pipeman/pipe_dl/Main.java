@@ -8,7 +8,7 @@ import org.pipeman.pipe_dl.download_page.DownloadPageRouteRegisterer;
 import org.pipeman.pipe_dl.upload.UploadRouteRegisterer;
 import org.pipeman.pipe_dl.users.login.LoginRouteRegisterer;
 import org.pipeman.pipe_dl.users.login.registration.RegistrationRouteRegisterer;
-import org.pipeman.pipe_dl.util.routes.PipeRouteBuilder;
+import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
 import org.pipeman.pipe_dl.util.uid.UID;
 import spark.Spark;
 

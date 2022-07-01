@@ -4,6 +4,9 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jdbi.v3.core.Jdbi;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class DB {
     private static Jdbi jdbi;
     private static HikariDataSource ds;
@@ -27,5 +30,9 @@ public class DB {
 
     public static HikariDataSource ds() {
         return ds;
+    }
+
+    public static Connection connection() throws SQLException {
+        return ds.getConnection();
     }
 }

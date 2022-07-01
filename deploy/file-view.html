@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>!name</title>
+    <style>
+        * {
+            font-family: Arial, serif;
+        }
+
+        .button {
+            margin-bottom: 15px;
+            box-shadow: 0 9px #999;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #3e8e41
+        }
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+        .button {
+            background-color: forestgreen;
+            color: lightgray;
+            border: none;
+            padding: 15px 32px;
+            text-align: center;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div style="padding-left: 50px">
+    <h1>File: !name</h1>
+    <input class="button" id="download" type="button" value="Download (!file-size)" onclick="download()">
+    <input class="button" id="look-at" type="button" value="Open in browser (if supported)" onclick="lookAt()">
+    <br>
+    <br>
+    <br>
+    !extra-content
+</div>
+
+</body>
+<script>
+    function download() {
+        const url = "!download-url";
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = "!name";
+        link.click();
+    }
+
+    function lookAt() {
+        const url = "!stream-url";
+        const link = document.createElement('a');
+        link.href = url;
+        link.click();
+    }
+</script>
+</html>

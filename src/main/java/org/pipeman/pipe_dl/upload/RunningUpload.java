@@ -13,6 +13,7 @@ public class RunningUpload {
     private final long id;
     private final long uploaderId;
     private OutputStream os;
+    private long fileSize = 0;
 
     RunningUpload(String filename, long directoryId, long uploadPageId, long id, long uploaderId) throws IOException {
         this.filename = filename;
@@ -29,11 +30,12 @@ public class RunningUpload {
 
     public void writeToFile(byte[] data) throws IOException {
         os.write(data);
+        fileSize += data.length;
     }
 
     public void uploadFileData() throws IOException {
         os.close();
-        FileHelper.uploadFile(new PipeFile(id, filename, uploadPageId, directoryId, uploaderId, false));
+        FileHelper.uploadFile(new PipeFile(id, filename, uploadPageId, directoryId, uploaderId, false, fileSize));
     }
 
     public void deleteFile() {

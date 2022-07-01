@@ -8,13 +8,13 @@
     table {
         font-family: arial, sans-serif;
         border-collapse: collapse;
+        width: 100%;
     }
 
     td, th {
         border: 1px solid #dddddd;
         text-align: left;
         padding: 8px;
-        width: 100%;
     }
 
     tr:nth-child(even) {
@@ -24,11 +24,12 @@
 <body>
 <table>
     <colgroup>
-        <col style="width: min-content;">
-        <col style="color: red">
+        <col style="width: 5px;" span="1">
+        <col>
+        <col style="width: 100px" span="1">
     </colgroup>
     <tr>
-        <th>Type</th>
+        <th></th>
         <th>Name</th>
         <th>Size</th>
     </tr>

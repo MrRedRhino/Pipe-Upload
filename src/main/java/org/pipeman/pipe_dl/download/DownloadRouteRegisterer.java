@@ -2,9 +2,9 @@ package org.pipeman.pipe_dl.download;
 
 import org.pipeman.pipe_dl.files.FileHelper;
 import org.pipeman.pipe_dl.files.PipeFile;
-import org.pipeman.pipe_dl.util.routes.PipeRouteBuilder;
-import org.pipeman.pipe_dl.util.routes.RoutePrefixes;
-import org.pipeman.pipe_dl.util.routes.RouteUtil;
+import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
+import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
+import org.pipeman.pipe_dl.util.pipe_route.RouteUtil;
 import spark.Request;
 import spark.Response;
 

@@ -3,15 +3,13 @@ package org.pipeman.pipe_dl.users.login;
 import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
 import spark.Request;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.pipeman.pipe_dl.DB.jdbi;
 
 
 public class AccountHelper {
-    private static final List<SessionID> sessionIDs = new ArrayList<>();
+    private static final Map<String, User> sessionIDs = new HashMap<>();
 
     public static User getAccountByEmail(String email) {
         if (email == null) return null;
@@ -32,12 +30,7 @@ public class AccountHelper {
 
     private static User getAccountBySessionId(String id) {
         if (id == null) return null;
-        for (SessionID sessionID : sessionIDs) {
-            if (id.equals(sessionID.id())) {
-                return sessionID.user();
-            }
-        }
-        return null;
+        return sessionIDs.get(id);
     }
 
     public static String tryToLogin(String email, String password) {
@@ -45,17 +38,13 @@ public class AccountHelper {
 
         if (user != null && user.authCorrect(email, password)) {
             String sid = UUID.randomUUID().toString();
-            AccountHelper.sessionIDs.add(new SessionID(sid, user));
+            sessionIDs.put(sid, user);
             return sid;
         }
         return null;
     }
 
     public static void logout(String sessionID) {
-        sessionIDs.removeIf(id -> id.id().equals(sessionID));
+        sessionIDs.remove(sessionID);
     }
-
-    record SessionID(String id, User user) {
-    }
-
 }
