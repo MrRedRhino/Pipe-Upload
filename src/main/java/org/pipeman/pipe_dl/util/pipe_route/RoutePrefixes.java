@@ -1,4 +1,4 @@
-package org.pipeman.pipe_dl.util.routes;
+package org.pipeman.pipe_dl.util.pipe_route;
 
 import org.pipeman.pipe_dl.Main;
 

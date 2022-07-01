@@ -1,4 +1,4 @@
-package org.pipeman.pipe_dl.util.routes;
+package org.pipeman.pipe_dl.util.pipe_route;
 
 import spark.Route;
 
@@ -11,6 +11,7 @@ public class PipeRouteBuilder {
     private Path filePath;
     private final String path;
     private String routePrefix = RoutePrefixes.DEFAULT.route;
+    private AuthorizedRoute authHandler;
 
     public PipeRouteBuilder(String path) {
         this.path = path;
@@ -41,15 +42,18 @@ public class PipeRouteBuilder {
         return this;
     }
 
+    public PipeRouteBuilder handle(AuthorizedRoute route) {
+        this.authHandler = route;
+        return this;
+    }
+
     public PipeRouteBuilder handle(Path path) {
         this.filePath = path;
         return this;
     }
 
     public PipeRoute build() {
-        return new PipeRoute(requestMethod, checkAuth, handler, path, filePath,
-                routePrefix
-                );
+        return new PipeRoute(requestMethod, checkAuth, handler, authHandler, path, filePath, routePrefix);
     }
 
     public void buildAndRegister() {
