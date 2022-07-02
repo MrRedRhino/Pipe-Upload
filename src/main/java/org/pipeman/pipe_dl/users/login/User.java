@@ -1,6 +1,6 @@
 package org.pipeman.pipe_dl.users.login;
 
-import org.pipeman.pipe_dl.util.PasswordSpicer;
+import org.pipeman.pipe_dl.util.security.PasswordSpicer;
 
 import java.beans.ConstructorProperties;
 
@@ -22,14 +22,14 @@ public class User {
         return id;
     }
 
+    public String name() {
+        return name;
+    }
+
     public boolean authCorrect(String email, String password) {
 
         if (this.email.equals(email.toLowerCase())) {
-            PasswordSpicer.applyPepper(password);
-            PasswordSpicer.applySalt(password);
-            PasswordSpicer.hash(password);
-
-            return password.equals(this.password);
+            return PasswordSpicer.hashAndSpice(password, this).equals(this.password);
         }
         return false;
     }
