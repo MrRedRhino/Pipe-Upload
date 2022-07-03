@@ -28,7 +28,6 @@ public class PasswordSpicer {
                 result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
             }
 
-            System.out.println("Hashing " + password + ", returned " + result);
             return result.toString();
         } catch (Exception ignored) {
         }
@@ -43,7 +42,7 @@ public class PasswordSpicer {
 
     private static String getPepper() {
         if (pepper == null) {
-            Path pepperPath = Path.of("oh-so-secret.txt");
+            Path pepperPath = Path.of("oh-so-secret.txt"); // I just realised, sharing this filename does not make a lot of sense
 
             try {
                 if (!pepperPath.toFile().exists()) {
