@@ -47,7 +47,7 @@ public class PipeRouteBuilder {
 
     public PipeRouteBuilder handle(AuthorizedRoute route) {
         this.authHandler = route;
-        return this;
+        return this.checkAuth(true);
     }
 
     public PipeRouteBuilder handle(Path path) {

@@ -61,12 +61,12 @@ public class ResponseBuilder {
 
     public String addInvalidAndReturn(String what) {
         addInvalid(what);
-        return ret();
+        return toString();
     }
 
     public String addMissingAndReturn(String what) {
         addMissing(what);
-        return ret();
+        return toString();
     }
 
     public void setResponse(String key, String value) {
@@ -75,10 +75,11 @@ public class ResponseBuilder {
 
     public void haltIfErrors() {
         if (errors.size() == 0) return;
-        Spark.halt(400, ret());
+        Spark.halt(400, toString());
     }
 
-    public String ret() {
+    @Override
+    public String toString() {
         JSONObject out = new JSONObject();
         if (errors.size() > 0) {
             response.status(400);

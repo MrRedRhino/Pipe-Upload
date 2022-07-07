@@ -57,15 +57,15 @@ public class UploadRouteRegisterer {
 
         String filename = rb.getHeader("filename");
         String directory = rb.getHeader("folder-id");
+        if (filename.length() > 30 || filename.isBlank()) rb.addInvalid("filename");
 
         rb.haltIfErrors();
 
         PipeFile dir = FileHelper.getFile(directory);
-        if (dir == null) return rb.addInvalidAndReturn("folder-id");
+        if (dir == null || !dir.isFolder()) return rb.addInvalidAndReturn("folder-id");
 
-        if (!dir.isFolder()) return rb.addInvalidAndReturn("folder-id");
         rb.setResponse("upload-id", UploadHelper.createUpload(filename, dir, user.id()));
-        return rb.ret();
+        return rb.toString();
     }
 
     private String upload(Request request, Response response) throws IOException {
@@ -76,7 +76,7 @@ public class UploadRouteRegisterer {
         if (request.bodyAsBytes().length > 2_097_152) return rb.addInvalidAndReturn("body-size");
 
         if (!UploadHelper.writeToUpload(uploadId, request.bodyAsBytes())) rb.addInvalid("upload-id");
-        return rb.ret();
+        return rb.toString();
     }
 
     private String finishUpload(Request request, Response response) throws IOException {
@@ -85,7 +85,7 @@ public class UploadRouteRegisterer {
         if (uploadId == null) return rb.addMissingAndReturn("upload-id");
 
         if (!UploadHelper.finishUpload(uploadId)) return rb.addInvalidAndReturn("upload-id");
-        return rb.ret();
+        return rb.toString();
     }
 
     private String cancelUpload(Request request, Response response) {
@@ -94,6 +94,6 @@ public class UploadRouteRegisterer {
         if (uploadId == null) return rb.addMissingAndReturn("upload-id");
 
         if (!UploadHelper.cancelUpload(uploadId)) return rb.addInvalidAndReturn("upload-id");
-        return rb.ret();
+        return rb.toString();
     }
 }

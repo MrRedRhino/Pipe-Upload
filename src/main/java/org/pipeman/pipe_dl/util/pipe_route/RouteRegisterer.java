@@ -3,6 +3,8 @@ package org.pipeman.pipe_dl.util.pipe_route;
 import org.pipeman.pipe_dl.users.login.AccountHelper;
 import org.pipeman.pipe_dl.users.login.User;
 import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Route;
 import spark.Spark;
 
@@ -10,8 +12,11 @@ import java.nio.file.Files;
 
 
 public class RouteRegisterer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RouteRegisterer.class);
 
     public static void register(PipeRoute route) {
+        LOGGER.info("Registering " + route.requestMethod + "-route: " + route.path + (route.checkAuth ? " with authorization" : ""));
+
         Route r = (request, response) -> {
             User user = null;
             if (route.checkAuth) {

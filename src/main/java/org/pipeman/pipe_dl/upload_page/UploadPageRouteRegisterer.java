@@ -1,4 +1,4 @@
-package org.pipeman.pipe_dl.download_page;
+package org.pipeman.pipe_dl.upload_page;
 
 import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.files.FileHelper;
@@ -13,8 +13,8 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DownloadPageRouteRegisterer {
-    public DownloadPageRouteRegisterer() {
+public class UploadPageRouteRegisterer {
+    public UploadPageRouteRegisterer() {
         registerRoutes();
     }
 

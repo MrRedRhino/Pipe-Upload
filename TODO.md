@@ -5,3 +5,4 @@
 - [ ] Make upload fancier
 - [ ] Upload limit
 - [ ] Store filesize
+- [ ] Access tokens like discord tokens

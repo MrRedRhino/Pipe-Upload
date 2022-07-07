@@ -4,7 +4,7 @@ import de.mkammerer.snowflakeid.structure.Structure;
 import org.pipeman.pipe_dl.config.Config;
 import org.pipeman.pipe_dl.config.ConfigProvider;
 import org.pipeman.pipe_dl.download.DownloadRouteRegisterer;
-import org.pipeman.pipe_dl.download_page.DownloadPageRouteRegisterer;
+import org.pipeman.pipe_dl.upload_page.UploadPageRouteRegisterer;
 import org.pipeman.pipe_dl.upload.UploadRouteRegisterer;
 import org.pipeman.pipe_dl.users.login.LoginRouteRegisterer;
 import org.pipeman.pipe_dl.users.login.registration.RegistrationRouteRegisterer;
@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 public class Main {
     public static LoginRouteRegisterer loginRouteRegisterer;
     public static UploadRouteRegisterer uploadRouteRegisterer;
-    public static DownloadPageRouteRegisterer downloadPageRouteRegisterer;
+    public static UploadPageRouteRegisterer uploadPageRouteRegisterer;
     public static DownloadRouteRegisterer downloadRouteRegisterer;
     public static RegistrationRouteRegisterer registrationRouteRegisterer;
     public static ConfigProvider configProvider;
@@ -34,7 +34,7 @@ public class Main {
                 config().uidGeneratorTimestamp,
                 config().uidGeneratorGen,
                 config().uidGeneratorSequence));
-        
+
         Spark.port(config().serverPort);
         Spark.init();
 
@@ -56,7 +56,7 @@ public class Main {
 
         loginRouteRegisterer = new LoginRouteRegisterer();
         uploadRouteRegisterer = new UploadRouteRegisterer();
-        downloadPageRouteRegisterer = new DownloadPageRouteRegisterer();
+        uploadPageRouteRegisterer = new UploadPageRouteRegisterer();
         downloadRouteRegisterer = new DownloadRouteRegisterer();
         registrationRouteRegisterer = new RegistrationRouteRegisterer();
 
