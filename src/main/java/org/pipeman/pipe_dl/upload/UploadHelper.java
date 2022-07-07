@@ -19,7 +19,7 @@ public class UploadHelper {
     }
 
 
-    public static boolean writeToUpload(String uploadID, byte[] data) throws IOException {
+    public static boolean writeToUpload(String uploadID, byte[] data) throws IOException, RunningUpload.FileTooBigException {
         RunningUpload upload = uploads.get(uploadID);
         if (upload == null) return false;
 

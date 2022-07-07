@@ -3,10 +3,11 @@ package org.pipeman.pipe_dl.upload;
 import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.files.FileHelper;
 import org.pipeman.pipe_dl.files.PipeFile;
-import org.pipeman.pipe_dl.users.login.User;
+import org.pipeman.pipe_dl.users.User;
 import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
 import org.pipeman.pipe_dl.util.pipe_route.RequestMethod;
 import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
+import org.pipeman.pipe_dl.util.pipe_route.RouteUtil;
 import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 import spark.Request;
 import spark.Response;
@@ -26,26 +27,22 @@ public class UploadRouteRegisterer {
                 .handle(Main.config().upload)
                 .buildAndRegister();
 
-        new PipeRouteBuilder("/upload/create")
-                .routePrefix(RoutePrefixes.API)
+        new PipeRouteBuilder(RoutePrefixes.API, "/upload/create")
                 .handle(this::startUpload)
                 .acceptMethod(RequestMethod.POST)
                 .buildAndRegister();
 
-        new PipeRouteBuilder("/upload/upload/:id")
-                .routePrefix(RoutePrefixes.API)
+        new PipeRouteBuilder(RoutePrefixes.API, "/upload/upload/:id")
                 .handle(this::upload)
                 .acceptMethod(RequestMethod.POST)
                 .buildAndRegister();
 
-        new PipeRouteBuilder("/upload/finish/:id")
-                .routePrefix(RoutePrefixes.API)
+        new PipeRouteBuilder(RoutePrefixes.API, "/upload/finish/:id")
                 .handle(this::finishUpload)
                 .acceptMethod(RequestMethod.POST)
                 .buildAndRegister();
 
-        new PipeRouteBuilder("/upload/cancel/:id")
-                .routePrefix(RoutePrefixes.API)
+        new PipeRouteBuilder(RoutePrefixes.API, "/upload/cancel/:id")
                 .handle(this::cancelUpload)
                 .acceptMethod(RequestMethod.POST)
                 .buildAndRegister();
@@ -75,8 +72,16 @@ public class UploadRouteRegisterer {
 
         if (request.bodyAsBytes().length > 2_097_152) return rb.addInvalidAndReturn("body-size");
 
-        if (!UploadHelper.writeToUpload(uploadId, request.bodyAsBytes())) rb.addInvalid("upload-id");
-        return rb.toString();
+        try {
+            if (!UploadHelper.writeToUpload(uploadId, request.bodyAsBytes())) {
+                // TODO route builder
+                return "";
+            }
+        } catch (RunningUpload.FileTooBigException e) {
+            UploadHelper.cancelUpload(uploadId);
+            return RouteUtil.msg("File too big", response, 400);
+        }
+        return "";
     }
 
     private String finishUpload(Request request, Response response) throws IOException {
