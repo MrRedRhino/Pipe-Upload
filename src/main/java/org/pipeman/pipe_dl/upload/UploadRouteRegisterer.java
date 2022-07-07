@@ -73,15 +73,12 @@ public class UploadRouteRegisterer {
         if (request.bodyAsBytes().length > 2_097_152) return rb.addInvalidAndReturn("body-size");
 
         try {
-            if (!UploadHelper.writeToUpload(uploadId, request.bodyAsBytes())) {
-                // TODO route builder
-                return "";
-            }
+            if (!UploadHelper.writeToUpload(uploadId, request.bodyAsBytes())) return rb.addInvalidAndReturn("upload-id");
         } catch (RunningUpload.FileTooBigException e) {
             UploadHelper.cancelUpload(uploadId);
-            return RouteUtil.msg("File too big", response, 400);
+            return rb.addInvalidAndReturn("file-size");
         }
-        return "";
+        return rb.toString();
     }
 
     private String finishUpload(Request request, Response response) throws IOException {

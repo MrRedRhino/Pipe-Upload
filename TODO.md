@@ -1,8 +1,8 @@
-- [ ] Access links  
-- [ ] Permissions (somehow)
-- [ ] Account creation, settings, email verification
-- [ ] Ratelimit
-- [ ] Make upload fancier
-- [ ] Upload limit
-- [ ] Store filesize
+- [x] Upload limit
+- [x] Store filesize
+- [ ] Access links
 - [ ] Access tokens like discord tokens
+- [ ] Account creation, settings, email verification
+- [ ] Make upload fancier
+- [ ] Permissions (somehow)
+- [ ] Rate-limit
