@@ -1,6 +1,6 @@
 package org.pipeman.pipe_dl.files;
 
-import org.pipeman.pipe_dl.download_page.UploadPage;
+import org.pipeman.pipe_dl.upload_page.UploadPage;
 
 import java.util.List;
 

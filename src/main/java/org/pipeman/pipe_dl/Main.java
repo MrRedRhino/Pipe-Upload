@@ -6,7 +6,7 @@ import org.pipeman.pipe_dl.config.Config;
 import org.pipeman.pipe_dl.config.ConfigProvider;
 import org.pipeman.pipe_dl.download.DownloadRouteRegisterer;
 import org.pipeman.pipe_dl.upload_page.UploadPageRouteRegisterer;
-import org.pipeman.pipe_dl.download_page.UploadPage;
+import org.pipeman.pipe_dl.upload_page.UploadPage;
 import org.pipeman.pipe_dl.files.PipeFile;
 import org.pipeman.pipe_dl.upload.UploadRouteRegisterer;
 import org.pipeman.pipe_dl.users.login.LoginRouteRegisterer;

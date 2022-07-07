@@ -31,12 +31,10 @@ public class UploadPageRouteRegisterer {
                         addTableEntry(fileTableBuilder, file);
                     }
 
-                    ModifiableFileHelper.copyFile(Main.config().downloadPage, response, Map.of(
+                    return ModifiableFileHelper.copyFile(Main.config().downloadPage, response, Map.of(
                             "!title", folderFile.name(),
                             "!table-content", fileTableBuilder.toString()
                     ));
-
-                    return "";
                 })
                 .buildAndRegister();
 
@@ -110,7 +108,6 @@ public class UploadPageRouteRegisterer {
             default -> replacements.put("!extra-content", "");
         }
 
-        ModifiableFileHelper.copyFile(Main.config().fileView, response, replacements);
-        return "";
+        return ModifiableFileHelper.copyFile(Main.config().fileView, response, replacements);
     }
 }
