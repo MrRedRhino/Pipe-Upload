@@ -2,6 +2,7 @@ package org.pipeman.pipe_dl.util.pipe_route;
 
 import org.pipeman.pipe_dl.users.login.AccountHelper;
 import org.pipeman.pipe_dl.users.login.User;
+import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 import spark.Route;
 import spark.Spark;
 
@@ -16,8 +17,13 @@ public class RouteRegisterer {
             if (route.checkAuth) {
                 user = AccountHelper.getAccountByRequest(request);
                 if (user == null) {
-                    response.header("Location", "/accounts/login");
-                    return RouteUtil.msg("Unauthorized", response, 302);
+                    if (route.forUser) {
+                        response.header("Location", "/accounts/login");
+                        response.status(302);
+                        return "<h1>Unauthorized</h1>";
+                    } else {
+                        return new ResponseBuilder(request, response).addInvalidAndReturn("authorization");
+                    }
                 }
             }
 

@@ -4,15 +4,15 @@ import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.files.FileHelper;
 import org.pipeman.pipe_dl.files.PipeFile;
 import org.pipeman.pipe_dl.users.login.User;
-import org.pipeman.pipe_dl.users.login.AccountHelper;
 import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
 import org.pipeman.pipe_dl.util.pipe_route.RequestMethod;
 import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
-import org.pipeman.pipe_dl.util.pipe_route.RouteUtil;
+import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 import spark.Request;
 import spark.Response;
 
 import java.io.*;
+import java.util.Map;
 
 public class UploadRouteRegisterer {
     public UploadRouteRegisterer() {
@@ -52,57 +52,48 @@ public class UploadRouteRegisterer {
     }
 
 
-    private String startUpload(Request request, Response response) throws IOException {
-        String filename = request.headers("filename");
-        String directory = request.headers("folder-id");
+    private String startUpload(User user, Request request, Response response) throws IOException {
+        ResponseBuilder rb = new ResponseBuilder(request, response, Map.of("upload-id", ""));
 
-        if (filename == null || filename.isBlank() || directory == null || directory.isBlank()) {
-            return RouteUtil.msg("Request headers 'filename' and 'folder-id' are required", response, 400);
-        }
+        String filename = rb.getHeader("filename");
+        String directory = rb.getHeader("folder-id");
 
-        User user = AccountHelper.getAccountByRequest(request);
-        if (user == null) {
-            return RouteUtil.msg("Authorisation incorrect", response, 400);
-        }
+        rb.haltIfErrors();
 
         PipeFile dir = FileHelper.getFile(directory);
-        if (dir == null) return RouteUtil.msg("Directory not found", response, 400);
-        if (!dir.isFolder()) return RouteUtil.msg("Folder-id is not a directory", response, 400);
+        if (dir == null) return rb.addInvalidAndReturn("folder-id");
 
-        String uploadId = UploadHelper.createUpload(filename, dir, user.id());
-        return "{\"upload-id\": \"" + uploadId + "\"}";
+        if (!dir.isFolder()) return rb.addInvalidAndReturn("folder-id");
+        rb.setResponse("upload-id", UploadHelper.createUpload(filename, dir, user.id()));
+        return rb.ret();
     }
 
     private String upload(Request request, Response response) throws IOException {
+        ResponseBuilder rb = new ResponseBuilder(request, response);
         String uploadId = request.params("id");
-        if (uploadId == null) return RouteUtil.msg("Parameter upload ID is missing.", response, 400);
+        if (uploadId == null) return rb.addMissingAndReturn("upload-id");
 
-        byte[] body = request.raw().getInputStream().readAllBytes();
-        if (body.length > 2_097_152) return RouteUtil.msg("Body too large, only 2 MiB allowed", response, 400);
+        if (request.bodyAsBytes().length > 2_097_152) return rb.addInvalidAndReturn("body-size");
 
-        if (!UploadHelper.writeToUpload(uploadId, body)) {
-            return RouteUtil.msg("Upload not found", response, 404);
-        }
-        return "";
+        if (!UploadHelper.writeToUpload(uploadId, request.bodyAsBytes())) rb.addInvalid("upload-id");
+        return rb.ret();
     }
 
     private String finishUpload(Request request, Response response) throws IOException {
+        ResponseBuilder rb = new ResponseBuilder(request, response);
         String uploadId = request.params("id");
-        if (uploadId == null) return RouteUtil.msg("Parameter upload ID is missing.", response, 400);
+        if (uploadId == null) return rb.addMissingAndReturn("upload-id");
 
-        if (!UploadHelper.finishUpload(uploadId)) {
-            return RouteUtil.msg("Upload not found", response, 404);
-        }
-        return "";
+        if (!UploadHelper.finishUpload(uploadId)) return rb.addInvalidAndReturn("upload-id");
+        return rb.ret();
     }
 
     private String cancelUpload(Request request, Response response) {
+        ResponseBuilder rb = new ResponseBuilder(request, response);
         String uploadId = request.params("id");
-        if (uploadId == null) return RouteUtil.msg("Parameter upload ID is missing.", response, 400);
+        if (uploadId == null) return rb.addMissingAndReturn("upload-id");
 
-        if (!UploadHelper.cancelUpload(uploadId)) {
-            return RouteUtil.msg("Upload not found", response, 404);
-        }
-        return "";
+        if (!UploadHelper.cancelUpload(uploadId)) return rb.addInvalidAndReturn("upload-id");
+        return rb.ret();
     }
 }
