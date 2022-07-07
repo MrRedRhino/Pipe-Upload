@@ -35,7 +35,7 @@
                     method: "POST",
                     headers: {
                         "filename": file.name,
-                        "folder-id": 1
+                        "folder-id": "1"
                     }
                 }).then(response => response.json().then(async result => {
                     if (response.status !== 200) {
