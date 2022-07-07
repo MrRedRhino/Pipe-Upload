@@ -1,9 +1,10 @@
 package org.pipeman.pipe_dl.users.login;
 
-import org.json.JSONObject;
 import org.pipeman.pipe_dl.Main;
+import org.pipeman.pipe_dl.captcha.CaptchaHelper;
 import org.pipeman.pipe_dl.util.ModifiableFileHelper;
 import org.pipeman.pipe_dl.util.pipe_route.*;
+import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 
 import java.util.Map;
 
@@ -45,20 +46,18 @@ public class LoginRouteRegisterer {
 
         new PipeRouteBuilder(RoutePrefixes.API, "/accounts/login")
                 .handle((request, response) -> {
+                    ResponseBuilder rb = new ResponseBuilder(request, response, Map.of("session-id", ""));
 
-                    String password = request.headers("password");
-                    String email = request.headers("email");
+                    String captchaKey = rb.getHeader("captcha-key");
+                    String email = rb.getHeader("email");
+                    String password = rb.getHeader("password");
 
-                    if (email == null || password == null) {
-                        return RouteUtil.msg("Invalid login", response, 400);
-                    } else {
-                        String sessionID = LoginHelper.tryToLogin(email, password);
-                        if (sessionID != null) {
-                            return new JSONObject(Map.of("session-id", sessionID)).toString();
-                        } else {
-                            return RouteUtil.msg("Invalid login", response, 400);
-                        }
-                    }
+                    rb.haltIfErrors();
+                    if (CaptchaHelper.isCaptchaValid(captchaKey)) return rb.addInvalidAndReturn("captcha-key");
+
+                    String sessionID = LoginHelper.tryToLogin(email, password);
+                    if (sessionID != null) rb.setResponse("session-id", sessionID);
+                    return rb.toString();
                 }).buildAndRegister();
     }
 }

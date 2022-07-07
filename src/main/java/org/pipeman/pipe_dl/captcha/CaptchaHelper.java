@@ -9,7 +9,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class CaptchaHelper {
-    public static boolean captchaValid(String captchaResponse) {
+    public static boolean isCaptchaValid(String captchaResponse) {
         if (captchaResponse == null) return false;
         try {
             String body = String.format("response=" + captchaResponse + "&secret=" + Main.config().hCaptchaKey);
