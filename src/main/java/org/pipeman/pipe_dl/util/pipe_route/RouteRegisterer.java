@@ -1,7 +1,7 @@
 package org.pipeman.pipe_dl.util.pipe_route;
 
-import org.pipeman.pipe_dl.users.login.AccountHelper;
-import org.pipeman.pipe_dl.users.login.User;
+import org.pipeman.pipe_dl.users.login.LoginHelper;
+import org.pipeman.pipe_dl.users.User;
 import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class RouteRegisterer {
         Route r = (request, response) -> {
             User user = null;
             if (route.checkAuth) {
-                user = AccountHelper.getAccountByRequest(request);
+                user = LoginHelper.getAccountByRequest(request);
                 if (user == null) {
                     if (route.forUser) {
                         response.header("Location", "/accounts/login");
@@ -37,11 +37,9 @@ public class RouteRegisterer {
                 return "";
             }
 
-            if (route.checkAuth) {
-                return route.authHandler.handle(user, request, response);
-            } else {
-                return route.handler.handle(request, response);
-            }
+            if (route.authHandler != null) return route.authHandler.handle(user, request, response);
+            else if (route.handler != null) return route.handler.handle(request, response);
+            return "";
         };
 
         switch (route.requestMethod) {

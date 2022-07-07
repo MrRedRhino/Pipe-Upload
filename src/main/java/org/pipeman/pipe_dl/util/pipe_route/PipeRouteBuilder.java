@@ -2,7 +2,6 @@ package org.pipeman.pipe_dl.util.pipe_route;
 
 import spark.Route;
 
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 
 public class PipeRouteBuilder {
@@ -16,6 +15,11 @@ public class PipeRouteBuilder {
     private boolean forUser = false;
 
     public PipeRouteBuilder(String path) {
+        this.path = path;
+    }
+
+    public PipeRouteBuilder(RoutePrefixes prefix, String path) {
+        routePrefix(prefix);
         this.path = path;
     }
 
@@ -46,6 +50,7 @@ public class PipeRouteBuilder {
     }
 
     public PipeRouteBuilder handle(AuthorizedRoute route) {
+        this.checkAuth();
         this.authHandler = route;
         return this.checkAuth(true);
     }
@@ -60,7 +65,6 @@ public class PipeRouteBuilder {
     }
 
     public void buildAndRegister() {
-        PipeRoute route = build();
-        route.register();
+        build().register();
     }
 }
