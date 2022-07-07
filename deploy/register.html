@@ -3,8 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
+    <style>
+        .center {
+            right: 50%;
+            bottom: 50%;
+            transform: translate(50%, 50%);
+            position: absolute;
+        }
+
+        h5 {
+            font-family: Arial, serif;
+            color: darkgray;
+            margin-bottom: 5px;
+            margin-top: 0;
+        }
+
+        .text-input {
+            height: 30px;
+            margin-bottom: 10px;
+            width: 300px;
+            font-size: 20px;
+            border: none;
+            background: lightgrey;
+            border-radius: 5px;
+        }
+
+        .text-input:hover {
+            opacity: 80%;
+        }
+
+        .button {
+            margin-bottom: 15px;
+            box-shadow: 0 9px #999;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #3e8e41
+        }
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+        /*THIS IS USED, INTELLIJ!*/
+        .password-not-equal {
+            color: red;
+        }
+    </style>
 </head>
 <body>
-  <h1>HELLO!!!!!!!!!!</h1>
+<div class="center">
+    <h1 style="color: forestgreen; font-family: Arial, serif">Create an account</h1>
+    <h5 id="email-header">E-Mail</h5>
+    <input class="text-input" id="email_field" type="text">
+    <h5>Username</h5>
+    <input class="text-input" id="username_field" type="text">
+    <h5 id="password-header">Password</h5>
+    <input class="text-input" id="password_field" type="password">
+    <h5 id="password-header2">Password a second time</h5>
+    <input class="text-input" id="password_field2" type="password">
+    <br>
+    <br>
+    <input style="background-color: forestgreen; color: lightgrey" class="text-input button" type="button"
+           value="Register" onclick="register()">
+    <form id="captcha-form">
+        <div class="h-captcha" data-sitekey="8793bdb5-e144-4bb9-8a03-a9a277a31355"
+             data-callback="onCaptchaSolved"></div>
+    </form>
+</div>
+
+<script>
+    document.getElementById("password_field").addEventListener("click", () => passwordsNotEqual(false));
+    document.getElementById("password_field2").addEventListener("click", () => passwordsNotEqual(false));
+
+    function register() {
+        const formData = new FormData(document.getElementById("captcha-form"));
+        const mail = document.getElementById("email_field").value;
+        const username = document.getElementById("username_field").value;
+        const password = document.getElementById("password_field").value;
+        const password2 = document.getElementById("password_field2").value;
+
+        if (password !== password2) {
+            passwordsNotEqual(true);
+            return;
+        }
+        fetch("/api/accounts/register", {
+            headers: {
+                "email": mail,
+                "password": password,
+                "username": username,
+                "captcha-key": formData.get("h-captcha-response")
+            },
+            method: "POST",
+            // body:
+        }).then(response => {
+            if (response.status === 200) {
+                response.json().then(json => {
+                    document.cookie = "login = " + json["session-id"] + ";path=/";
+                    location.href = "/accounts/logged-in";
+                });
+            } else if (response.status === 400) {
+                // creation failed
+                console.log(response.text().then(r => console.log(r)));
+            }
+        })
+    }
+
+    function passwordsNotEqual(fail) {
+        const pwd_header = document.getElementById("password-header");
+        const pwd_header2 = document.getElementById("password-header2");
+
+        if (fail) {
+            pwd_header.classList.add("password-not-equal");
+            pwd_header2.classList.add("password-not-equal");
+            pwd_header.innerHTML = "Passwords do not match";
+            pwd_header2.innerHTML = "Passwords do not match";
+        } else {
+            pwd_header.classList.remove("password-not-equal");
+            pwd_header2.classList.remove("password-not-equal");
+            pwd_header.innerHTML = "Password";
+            pwd_header2.innerHTML = "Password a second time";
+        }
+    }
+</script>
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 </body>
 </html>
