@@ -1,6 +1,6 @@
 package org.pipeman.pipe_dl.files;
 
-import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
+import org.pipeman.pipe_dl.download_page.UploadPage;
 
 import java.util.List;
 
@@ -8,12 +8,9 @@ import static org.pipeman.pipe_dl.DB.jdbi;
 
 public class FileHelper {
     public static PipeFile getFile(long id) {
-        return jdbi().withHandle(handle -> {
-            handle.registerRowMapper(ConstructorMapper.factory(PipeFile.class));
-            return handle.createQuery("SELECT * FROM files WHERE id = (?) LIMIT 1")
-                    .bind(0, id)
-                    .mapTo(PipeFile.class).list().get(0);
-        });
+        return jdbi().withHandle(handle -> handle.createQuery("SELECT * FROM files WHERE id = (?) LIMIT 1")
+                .bind(0, id)
+                .mapTo(PipeFile.class).list().get(0));
     }
 
 
@@ -28,19 +25,17 @@ public class FileHelper {
 
 
     public static List<PipeFile> listDir(long directoryId) {
-        return jdbi().withHandle(handle -> {
-            handle.registerRowMapper(ConstructorMapper.factory(PipeFile.class));
-            return handle.createQuery("SELECT * FROM files WHERE directory_id = (?)")
-                    .bind(0, directoryId)
-                    .mapTo(PipeFile.class)
-                    .list();
-        });
+        return jdbi().withHandle(handle -> handle.createQuery("SELECT * FROM files WHERE directory_id = (?)")
+                .bind(0, directoryId)
+                .mapTo(PipeFile.class)
+                .list());
     }
 
 
     public static void uploadFile(PipeFile file) {
-        jdbi().useHandle(handle -> handle.createUpdate("INSERT INTO files (id, name, page_id, directory_id, " +
-                        "creator_id, is_folder, size) VALUES ((?), (?), (?), (?), (?), (?), (?))")
+        jdbi().useHandle(handle -> handle.createUpdate("INSERT INTO files " +
+                        "(id, name, page_id, directory_id, creator_id, is_folder, size) " +
+                        "VALUES ((?), (?), (?), (?), (?), (?), (?))")
                 .bind(0, file.id())
                 .bind(1, file.name())
                 .bind(2, file.pageId())
@@ -49,5 +44,7 @@ public class FileHelper {
                 .bind(5, file.isFolder())
                 .bind(6, file.size())
                 .execute());
+
+        UploadPage.get(file.pageId()).ifPresent(page -> page.usedBytesChain().add(file.size()).save());
     }
 }

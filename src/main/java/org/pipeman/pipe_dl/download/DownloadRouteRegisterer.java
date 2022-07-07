@@ -17,8 +17,7 @@ public class DownloadRouteRegisterer {
     }
 
     private void registerRoutes() {
-        new PipeRouteBuilder("/download/:file")
-                .routePrefix(RoutePrefixes.API)
+        new PipeRouteBuilder(RoutePrefixes.API, "/download/:file")
                 .handle((request, response) -> {
                     PipeFile folderFile = FileHelper.getFile(request.params("file"));
                     if (folderFile == null) return RouteUtil.msg("Not found", response, 404);

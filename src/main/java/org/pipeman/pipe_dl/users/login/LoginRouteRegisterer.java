@@ -31,7 +31,7 @@ public class LoginRouteRegisterer {
                 .handle((request, response) -> {
                     String cookie = request.cookie("login");
                     if (cookie != null) {
-                        AccountHelper.logout(cookie);
+                        LoginHelper.logout(cookie);
                         response.removeCookie("login");
                     }
                     return "";
@@ -39,18 +39,11 @@ public class LoginRouteRegisterer {
 
 
         new PipeRouteBuilder("/accounts/logged-in")
-                .checkAuth()
-                .handle((request, response) -> {
-                    User user = AccountHelper.getAccountByRequest(request);
-                    ModifiableFileHelper.copyFile(Main.config().loggedIn, response,
-                            Map.of("!username", user.name));
-
-                    return "";
-                }).buildAndRegister();
+                .handle((user, request, response) -> ModifiableFileHelper.copyFile(Main.config().loggedIn, response, Map.of("!username", user.name())))
+                .buildAndRegister();
 
 
-        new PipeRouteBuilder("/accounts/login")
-                .routePrefix(RoutePrefixes.API)
+        new PipeRouteBuilder(RoutePrefixes.API, "/accounts/login")
                 .handle((request, response) -> {
 
                     String password = request.headers("password");
@@ -59,7 +52,7 @@ public class LoginRouteRegisterer {
                     if (email == null || password == null) {
                         return RouteUtil.msg("Invalid login", response, 400);
                     } else {
-                        String sessionID = AccountHelper.tryToLogin(email, password);
+                        String sessionID = LoginHelper.tryToLogin(email, password);
                         if (sessionID != null) {
                             return new JSONObject(Map.of("session-id", sessionID)).toString();
                         } else {
