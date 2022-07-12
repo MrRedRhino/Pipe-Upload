@@ -6,3 +6,5 @@
 - [ ] Make upload fancier
 - [ ] Permissions (somehow)
 - [ ] Rate-limit
+- [ ] Extra captcha checks
+- [ ] Send mails

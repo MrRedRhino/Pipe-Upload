@@ -5,12 +5,12 @@ import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
 import org.pipeman.pipe_dl.config.Config;
 import org.pipeman.pipe_dl.config.ConfigProvider;
 import org.pipeman.pipe_dl.download.DownloadRouteRegisterer;
-import org.pipeman.pipe_dl.upload_page.UploadPageRouteRegisterer;
-import org.pipeman.pipe_dl.upload_page.UploadPage;
 import org.pipeman.pipe_dl.files.PipeFile;
 import org.pipeman.pipe_dl.upload.UploadRouteRegisterer;
-import org.pipeman.pipe_dl.users.login.LoginRouteRegisterer;
+import org.pipeman.pipe_dl.upload_page.UploadPage;
+import org.pipeman.pipe_dl.upload_page.UploadPageRouteRegisterer;
 import org.pipeman.pipe_dl.users.User;
+import org.pipeman.pipe_dl.users.login.LoginRouteRegisterer;
 import org.pipeman.pipe_dl.users.registration.RegistrationRouteRegisterer;
 import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
 import org.pipeman.pipe_dl.util.uid.UID;
@@ -66,9 +66,11 @@ public class Main {
         downloadRouteRegisterer = new DownloadRouteRegisterer();
         registrationRouteRegisterer = new RegistrationRouteRegisterer();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(DB::disconnect));
-        Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
         DB.connect();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            DB.disconnect();
+            Spark.stop();
+        }));
 
         jdbi().registerRowMapper(ConstructorMapper.factory(User.class))
                 .registerRowMapper(ConstructorMapper.factory(UploadPage.class))
