@@ -7,7 +7,6 @@ import org.pipeman.pipe_dl.users.User;
 import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
 import org.pipeman.pipe_dl.util.pipe_route.RequestMethod;
 import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
-import org.pipeman.pipe_dl.util.pipe_route.RouteUtil;
 import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 import spark.Request;
 import spark.Response;
@@ -61,7 +60,7 @@ public class UploadRouteRegisterer {
         PipeFile dir = FileHelper.getFile(directory);
         if (dir == null || !dir.isFolder()) return rb.addInvalidAndReturn("folder-id");
 
-        rb.setResponse("upload-id", UploadHelper.createUpload(filename, dir, user.id()));
+        rb.addResponse("upload-id", UploadHelper.createUpload(filename, dir, user.id()));
         return rb.toString();
     }
 

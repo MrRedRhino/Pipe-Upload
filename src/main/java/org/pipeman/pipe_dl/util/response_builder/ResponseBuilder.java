@@ -13,10 +13,10 @@ import java.util.Map;
 public class ResponseBuilder {
     private final Request request;
     private final List<String> errors = new ArrayList<>();
-    private final Map<String, String> responses = new HashMap<>();
+    private final Map<String, Object> responses = new HashMap<>();
     private final Response response;
 
-    public ResponseBuilder(Request request, Response response, Map<String, String> defaultResponses) {
+    public ResponseBuilder(Request request, Response response, Map<String, Object> defaultResponses) {
         this.request = request;
         this.response = response;
         responses.putAll(defaultResponses);
@@ -69,13 +69,12 @@ public class ResponseBuilder {
         return toString();
     }
 
-    public void setResponse(String key, String value) {
+    public void addResponse(String key, Object value) {
         responses.put(key, value);
     }
 
     public void haltIfErrors() {
-        if (errors.size() == 0) return;
-        Spark.halt(400, toString());
+        if (errors.size() != 0) Spark.halt(400, toString());
     }
 
     @Override

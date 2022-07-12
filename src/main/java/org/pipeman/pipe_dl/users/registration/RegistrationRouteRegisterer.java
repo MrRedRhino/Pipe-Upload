@@ -40,9 +40,9 @@ public class RegistrationRouteRegisterer {
 
         rb.haltIfErrors();
 
-        if (User.getByEmail(email).isPresent() || email.isBlank()) return rb.addInvalidAndReturn("email");
-
+        if (email.isBlank() || User.getByEmail(email).isPresent()) return rb.addInvalidAndReturn("email");
         if (password.isBlank()) return rb.addInvalidAndReturn("password");
+        if (username.isBlank()) return rb.addInvalidAndReturn("username");
 
         if (!CaptchaHelper.isCaptchaValid(captchaKey)) return rb.addInvalidAndReturn("captcha-key");
 
@@ -50,7 +50,7 @@ public class RegistrationRouteRegisterer {
         user.password(PasswordSpicer.hashAndSpice(password, user));
         user.save();
 
-        rb.setResponse("session-id", LoginHelper.genSessionId(user));
+        rb.addResponse("session-id", LoginHelper.genSessionId(user));
         return rb.toString();
     }
 }
