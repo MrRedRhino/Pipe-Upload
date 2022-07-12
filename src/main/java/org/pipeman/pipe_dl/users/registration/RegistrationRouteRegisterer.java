@@ -44,13 +44,12 @@ public class RegistrationRouteRegisterer {
         if (password.isBlank()) return rb.addInvalidAndReturn("password");
         if (username.isBlank()) return rb.addInvalidAndReturn("username");
 
-        if (!CaptchaHelper.isCaptchaValid(captchaKey)) return rb.addInvalidAndReturn("captcha-key");
+        if (CaptchaHelper.isCaptchaInvalid(captchaKey)) return rb.addInvalidAndReturn("captcha-key");
 
         User user = new User(username, password, email);
-        user.password(PasswordSpicer.hashAndSpice(password, user));
-        user.save();
+        user.password(PasswordSpicer.hashAndSpice(password, user)).save();
 
-        rb.addResponse("session-id", LoginHelper.genSessionId(user));
+        rb.addResponse("session-id", LoginHelper.forceLogin(user));
         return rb.toString();
     }
 }

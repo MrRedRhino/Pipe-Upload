@@ -12,7 +12,7 @@ public class User {
     private final long id;
     private String name;
     private String password;
-    private String email;
+    private final String email;
 
     @ConstructorProperties({"id", "name", "password", "email"})
     public User(long id, String name, String password, String email) {

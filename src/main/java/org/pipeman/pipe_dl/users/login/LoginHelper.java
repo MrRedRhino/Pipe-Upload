@@ -3,7 +3,9 @@ package org.pipeman.pipe_dl.users.login;
 import org.pipeman.pipe_dl.users.User;
 import spark.Request;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class LoginHelper {
     private static final Map<String, User> sessionIDs = new HashMap<>();
@@ -19,16 +21,7 @@ public class LoginHelper {
         return sessionIDs.get(id);
     }
 
-    public static String tryToLogin(String email, String password) {
-        Optional<User> user = User.getByEmail(email);
-
-        if (user.isPresent() && user.get().authCorrect(email, password)) {
-            return genSessionId(user.get());
-        }
-        return null;
-    }
-
-    public static String genSessionId(User user) {
+    public static String forceLogin(User user) {
         String sid = UUID.randomUUID().toString();
         sessionIDs.put(sid, user);
         return sid;

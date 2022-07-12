@@ -68,6 +68,11 @@
     <br>
     <input style="background-color: lightgrey; color: forestgreen" class="text-input button" type="button"
            value="Register" onclick="location.href = '/accounts/register'">
+
+    <form id="captcha-form">
+        <div class="h-captcha" data-sitekey="8793bdb5-e144-4bb9-8a03-a9a277a31355"
+             data-callback="onCaptchaSolved"></div>
+    </form>
 </div>
 </body>
 <script>
@@ -77,7 +82,8 @@
         fetch("/api/accounts/login", {
             headers: {
                 "email": document.getElementById("username_field").value,
-                "password": document.getElementById("password_field").value
+                "password": document.getElementById("password_field").value,
+                "captcha-key": new FormData(document.getElementById("captcha-form")).get("h-captcha-response")
             }
         }).then(response => {
             if (response.status === 200) {
@@ -108,4 +114,5 @@
         }
     }
 </script>
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 </html>

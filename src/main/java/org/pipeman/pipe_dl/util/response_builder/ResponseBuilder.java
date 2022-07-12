@@ -69,8 +69,9 @@ public class ResponseBuilder {
         return toString();
     }
 
-    public void addResponse(String key, Object value) {
+    public ResponseBuilder addResponse(String key, Object value) {
         responses.put(key, value);
+        return this;
     }
 
     public void haltIfErrors() {

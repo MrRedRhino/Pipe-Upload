@@ -9,8 +9,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class CaptchaHelper {
-    public static boolean isCaptchaValid(String captchaResponse) {
-        if (captchaResponse == null) return false;
+    public static boolean isCaptchaInvalid(String captchaResponse) {
+        if (captchaResponse == null || captchaResponse.isBlank()) return true;
         try {
             String body = String.format("response=" + captchaResponse + "&secret=" + Main.config().hCaptchaKey);
 
@@ -21,11 +21,11 @@ public class CaptchaHelper {
                     .build();
 
             String response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString()).body();
-            return new JSONObject(response).getBoolean("success");
+            return !new JSONObject(response).getBoolean("success");
 
         } catch (Exception ignored) {
         }
 
-        return false;
+        return true;
     }
 }
