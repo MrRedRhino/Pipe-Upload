@@ -12,7 +12,7 @@ public class CaptchaHelper {
     public static boolean isCaptchaInvalid(String captchaResponse) {
         if (captchaResponse == null || captchaResponse.isBlank()) return true;
         try {
-            String body = String.format("response=" + captchaResponse + "&secret=" + Main.config().hCaptchaKey);
+            String body = "response=" + captchaResponse + "&secret=" + Main.config().hCaptchaKey;
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI("https://hcaptcha.com/siteverify"))
