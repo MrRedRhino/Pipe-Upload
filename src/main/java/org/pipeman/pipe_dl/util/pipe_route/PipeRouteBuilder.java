@@ -10,12 +10,12 @@ public class PipeRouteBuilder {
     private Route handler;
     private Path filePath;
     private final String path;
-    private String routePrefix = RoutePrefixes.DEFAULT.route;
+    private String routePrefix;
     private AuthorizedRoute authHandler;
     private boolean forUser = false;
 
     public PipeRouteBuilder(String path) {
-        this.path = path;
+        this(RoutePrefixes.DEFAULT, path);
     }
 
     public PipeRouteBuilder(RoutePrefixes prefix, String path) {
