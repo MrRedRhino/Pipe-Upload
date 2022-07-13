@@ -13,7 +13,6 @@ public class FileHelper {
                 .mapTo(PipeFile.class).list().get(0));
     }
 
-
     public static PipeFile getFile(String id) {
         if (id == null) return null;
         try {
@@ -23,14 +22,12 @@ public class FileHelper {
         }
     }
 
-
     public static List<PipeFile> listDir(long directoryId) {
         return jdbi().withHandle(handle -> handle.createQuery("SELECT * FROM files WHERE directory_id = (?)")
                 .bind(0, directoryId)
                 .mapTo(PipeFile.class)
                 .list());
     }
-
 
     public static void uploadFile(PipeFile file) {
         jdbi().useHandle(handle -> handle.createUpdate("INSERT INTO files " +
