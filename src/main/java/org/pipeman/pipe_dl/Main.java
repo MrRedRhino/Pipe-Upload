@@ -74,7 +74,8 @@ public class Main {
 
         jdbi().registerRowMapper(ConstructorMapper.factory(User.class))
                 .registerRowMapper(ConstructorMapper.factory(UploadPage.class))
-                .registerRowMapper(ConstructorMapper.factory(PipeFile.class));
+                .registerRowMapper(ConstructorMapper.factory(PipeFile.class))
+                .registerRowMapper(ConstructorMapper.factory(PipeFile.DeletedFile.class));
     }
 
     public static Config config() {

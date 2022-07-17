@@ -2,6 +2,7 @@ package org.pipeman.pipe_dl.pipe_file;
 
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.pipeman.pipe_dl.Main;
+import org.pipeman.pipe_dl.util.misc.Utils;
 
 import java.beans.ConstructorProperties;
 import java.io.File;
@@ -17,7 +18,7 @@ public class PipeFile {
     private final boolean isFolder;
     private final long size;
     private String name;
-    private String path;
+    private final String path;
 
     @ConstructorProperties({"id", "name", "page_id", "creator_id", "is_folder", "size", "path"})
     public PipeFile(long id, String name, long pageId, long creatorId, boolean isFolder, long size, String path) {
@@ -37,16 +38,22 @@ public class PipeFile {
     }
 
     public static List<PipeFile> getChildren(long id) {
-        return jdbi().withHandle(handle -> handle.createQuery("SELECT * FROM files WHERE path ~ '*." + id + ".*{1}'")
-//                .bind(0, id)
-                .mapTo(PipeFile.class)
-                .list());
+        return jdbi().withHandle(handle -> handle.createQuery(
+                "SELECT * FROM files WHERE path ~ '*." + id + ".*{1}' ORDER BY name")
+                .mapTo(PipeFile.class).list());
     }
 
     public static PipeFile createFile(long id, String name, long pageId, long creatorId, long parent, long size) {
         PipeFile parentFile = PipeFile.get(parent).orElse(null);
         if (parentFile == null || !parentFile.isFolder()) return null;
 
+        return new PipeFile(id, name, pageId, creatorId, false, size, parentFile.path() + "." + id);
+    }
+
+    public static PipeFile createFile(String name, long pageId, long creatorId, long parent, long size) {
+        PipeFile parentFile = PipeFile.get(parent).orElse(null);
+        if (parentFile == null || !parentFile.isFolder()) return null;
+        long id = Main.uid.newUID();
         return new PipeFile(id, name, pageId, creatorId, false, size, parentFile.path() + "." + id);
     }
 
@@ -88,8 +95,12 @@ public class PipeFile {
     }
 
     public long parent() {
-        String[] split = path.split("\\.");
-        return Long.parseLong(split[split.length - 1]);
+        long[] ancestors = ancestors();
+        return ancestors[Math.max(ancestors.length - 2, 0)];
+    }
+
+    public long[] ancestors() {
+        return Utils.parseToLongArray(path().split("\\."));
     }
 
     public long creatorId() {
@@ -112,47 +123,50 @@ public class PipeFile {
         return size;
     }
 
+    public String extension() {
+        int lastIndexOfDot = name().lastIndexOf(".");
+        return lastIndexOfDot == -1 ? name() : name().substring(lastIndexOfDot);
+    }
+
     public void delete() {
-
-        if (!isFolder()) {
-            jdbi().useHandle(handle -> handle.createUpdate("DELETE FROM files WHERE id = (?)")
-                    .bind(0, id())
-                    .execute());
-            // noinspection ResultOfMethodCallIgnored
-            toJavaFile().delete();
-        } else {
-
+        final List<DeletedFile> deletedFiles = jdbi().withHandle(handle ->
+                handle.createQuery("DELETE FROM files WHERE path <@ '0.2' RETURNING id, is_folder")
+                        .mapTo(DeletedFile.class)
+                        .list()
+        );
+        for (DeletedFile f : deletedFiles) {
+            if (!f.isFolder()) FileDeleter.deleteFile(f.id());
         }
     }
 
     public void save() throws FileTooBigException {
         try {
             jdbi().useHandle(handle -> handle.createUpdate("""
-                        INSERT INTO files (id, name, page_id, creator_id, is_folder, size, path)
-                        VALUES ((?), (?), (?), (?), (?), (?), (?))
-                        ON CONFLICT (id) DO UPDATE SET id         = (?),
-                                                       name       = (?),
-                                                       page_id    = (?),
-                                                       creator_id = (?),
-                                                       is_folder  = (?),
-                                                       size       = (?),
-                                                       path       = (?)
-                                                       """)
-                .bind(0, id())
-                .bind(1, name())
-                .bind(2, pageId())
-                .bind(3, creatorId())
-                .bind(4, isFolder())
-                .bind(5, size())
-                .bind(6, path())
-                .bind(7, id())
-                .bind(8, name())
-                .bind(9, pageId())
-                .bind(10, creatorId())
-                .bind(11, isFolder())
-                .bind(12, size())
-                .bind(13, path())
-                .execute());
+                            INSERT INTO files (id, name, page_id, creator_id, is_folder, size, path)
+                            VALUES ((?), (?), (?), (?), (?), (?), (?))
+                            ON CONFLICT (id) DO UPDATE SET id         = (?),
+                                                           name       = (?),
+                                                           page_id    = (?),
+                                                           creator_id = (?),
+                                                           is_folder  = (?),
+                                                           size       = (?),
+                                                           path       = (?)
+                                                           """)
+                    .bind(0, id())
+                    .bind(1, name())
+                    .bind(2, pageId())
+                    .bind(3, creatorId())
+                    .bind(4, isFolder())
+                    .bind(5, size())
+                    .bind(6, path())
+                    .bind(7, id())
+                    .bind(8, name())
+                    .bind(9, pageId())
+                    .bind(10, creatorId())
+                    .bind(11, isFolder())
+                    .bind(12, size())
+                    .bind(13, path())
+                    .execute());
         } catch (UnableToExecuteStatementException e) {
             if (e.getCause().getMessage().equalsIgnoreCase("ERROR: Available storage space exceeded."))
                 throw new PipeFile.FileTooBigException();
@@ -171,5 +185,11 @@ public class PipeFile {
     }
 
     public static class FileTooBigException extends Exception {
+    }
+
+    public record DeletedFile(long id, boolean isFolder) {
+        @ConstructorProperties({"id", "is_folder"})
+        public DeletedFile {
+        }
     }
 }

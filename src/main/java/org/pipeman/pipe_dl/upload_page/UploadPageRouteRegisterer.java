@@ -27,6 +27,7 @@ public class UploadPageRouteRegisterer {
                     if (!folderFile.isFolder()) return viewFile(folderFile, response);
 
                     StringBuilder fileTableBuilder = new StringBuilder();
+                    PipeFile.get(folderFile.parent()).ifPresent(f -> addTableEntry(fileTableBuilder, f.name("..")));
                     for (PipeFile file : PipeFile.getChildren(folderFile.id())) {
                         addTableEntry(fileTableBuilder, file);
                     }
@@ -92,7 +93,7 @@ public class UploadPageRouteRegisterer {
                 "!stream-url", "/files/" + file.id() + "/stream"
         ));
 
-        switch (file.name().substring(file.name().lastIndexOf("."))) {
+        switch (file.extension()) {
             case ".jpg", ".jpeg", ".png", ".gif" ->
                     replacements.put("!extra-content",
                             "<img src=\"/files/" + file.id() + "/stream\" alt=\"" + file.name() + "\">");
