@@ -1,6 +1,7 @@
 package org.pipeman.pipe_dl.upload;
 
 import org.pipeman.pipe_dl.Main;
+import org.pipeman.pipe_dl.pipe_file.FileDeleter;
 import org.pipeman.pipe_dl.upload_page.UploadPage;
 import org.pipeman.pipe_dl.pipe_file.PipeFile;
 
@@ -55,14 +56,6 @@ public class RunningUpload {
     }
 
     public void deleteFile() {
-        try {
-            os.close();
-        } catch (Exception ignored) {
-        }
-
-        File f = new File(Main.config().uploadDir + id);
-
-        //noinspection ResultOfMethodCallIgnored
-        f.delete();
+        FileDeleter.deleteFile(id);
     }
 }
