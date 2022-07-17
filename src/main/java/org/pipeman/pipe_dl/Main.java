@@ -4,8 +4,8 @@ import de.mkammerer.snowflakeid.structure.Structure;
 import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
 import org.pipeman.pipe_dl.config.Config;
 import org.pipeman.pipe_dl.config.ConfigProvider;
-import org.pipeman.pipe_dl.download.DownloadRouteRegisterer;
-import org.pipeman.pipe_dl.files.PipeFile;
+import org.pipeman.pipe_dl.files.FileApiRouteRegisterer;
+import org.pipeman.pipe_dl.pipe_file.PipeFile;
 import org.pipeman.pipe_dl.upload.UploadRouteRegisterer;
 import org.pipeman.pipe_dl.upload_page.UploadPage;
 import org.pipeman.pipe_dl.upload_page.UploadPageRouteRegisterer;
@@ -26,8 +26,8 @@ public class Main {
     public static LoginRouteRegisterer loginRouteRegisterer;
     public static UploadRouteRegisterer uploadRouteRegisterer;
     public static UploadPageRouteRegisterer uploadPageRouteRegisterer;
-    public static DownloadRouteRegisterer downloadRouteRegisterer;
     public static RegistrationRouteRegisterer registrationRouteRegisterer;
+    public static FileApiRouteRegisterer fileApiRouteRegisterer;
     public static ConfigProvider configProvider;
 
     public static UID uid;
@@ -63,8 +63,8 @@ public class Main {
         loginRouteRegisterer = new LoginRouteRegisterer();
         uploadRouteRegisterer = new UploadRouteRegisterer();
         uploadPageRouteRegisterer = new UploadPageRouteRegisterer();
-        downloadRouteRegisterer = new DownloadRouteRegisterer();
         registrationRouteRegisterer = new RegistrationRouteRegisterer();
+        fileApiRouteRegisterer = new FileApiRouteRegisterer();
 
         DB.connect();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

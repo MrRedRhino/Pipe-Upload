@@ -1,6 +1,7 @@
 package org.pipeman.pipe_dl.upload_page;
 
-import org.pipeman.pipe_dl.util.misc.ChainLong;
+import org.pipeman.pipe_dl.Main;
+import org.pipeman.pipe_dl.pipe_file.PipeFile;
 
 import java.beans.ConstructorProperties;
 import java.util.Optional;
@@ -25,22 +26,32 @@ public class UploadPage {
         this.usedBytes = usedBytes;
     }
 
+    public static Optional<UploadPage> get(long id) {
+        return jdbi().withHandle(handle -> handle.createQuery("SELECT * FROM upload_pages WHERE id = (?)")
+                .bind(0, id)
+                .mapTo(UploadPage.class)
+                .findFirst());
+    }
+
+    public static UploadPage createUploadPage(String name, long ownerId, long totalBytes) {
+        long id = Main.uid.newUID();
+        try {
+            new PipeFile(id, name, id, ownerId, true, 0, id + "").save();
+        } catch (PipeFile.FileTooBigException ignored) {
+            return null;
+        }
+        UploadPage newPage = new UploadPage(name, id, ownerId, id, totalBytes, 0);
+        newPage.save();
+        return newPage;
+    }
+
     public long totalBytes() {
         return totalBytes;
-    }
-
-    public void usedBytes(long usedBytes) {
-        this.usedBytes = usedBytes;
-    }
-
-    public ChainLong<UploadPage> usedBytesChain() {
-        return new ChainLong<>(this, usedBytes, this::usedBytes);
     }
 
     public long usedBytes() {
         return usedBytes;
     }
-
 
     public String name() {
         return name;
@@ -58,29 +69,24 @@ public class UploadPage {
         return ownerId;
     }
 
-    public static Optional<UploadPage> get(long id) {
-        return jdbi().withHandle(handle -> handle.createQuery("SELECT * FROM upload_pages WHERE id = (?)")
-                .bind(0, id)
-                .mapTo(UploadPage.class)
-                .findFirst());
-    }
-
     public void save() {
         jdbi().useHandle(handle -> handle.createUpdate(
-                "INSERT INTO upload_pages (name, id, owner_id, root_dir_id, total_bytes, used_bytes) VALUES ((?), (?), (?), (?), (?), (?)) " +
-                        "ON CONFLICT (id) DO UPDATE SET name = (?), owner_id = (?), root_dir_id = (?), total_bytes = (?), used_bytes = (?)")
-                .bind(0, name)
-                .bind(1, ownerId)
-                .bind(2, rootDirId)
-                .bind(3, totalBytes)
-                .bind(4, usedBytes)
-                .bind(5, id)
-                .bind(6, name)
-                .bind(7, ownerId)
-                .bind(8, rootDirId)
-                .bind(9, totalBytes)
-                .bind(10, usedBytes)
-                .bind(11, id)
+                        "INSERT INTO upload_pages (name, id, owner_id, root_dir_id, total_bytes, used_bytes) VALUES (" +
+                        "(?), (?), (?), (?), (?), (?)) " +
+                        "ON CONFLICT (id) DO UPDATE SET name = (?), owner_id = (?), root_dir_id = (?), total_bytes = " +
+                        "(?), used_bytes = (?)")
+                .bind(0, name())
+                .bind(1, ownerId())
+                .bind(2, rootDirId())
+                .bind(3, totalBytes())
+                .bind(4, usedBytes())
+                .bind(5, id())
+                .bind(6, name())
+                .bind(7, ownerId())
+                .bind(8, rootDirId())
+                .bind(9, totalBytes())
+                .bind(10, usedBytes())
+                .bind(11, id())
                 .execute()
         );
     }

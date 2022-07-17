@@ -27,7 +27,7 @@ public class UploadPageRouteRegisterer {
                     if (!folderFile.isFolder()) return viewFile(folderFile, response);
 
                     StringBuilder fileTableBuilder = new StringBuilder();
-                    for (PipeFile file : FileHelper.listDir(folderFile.id())) {
+                    for (PipeFile file : PipeFile.getChildren(folderFile.id())) {
                         addTableEntry(fileTableBuilder, file);
                     }
 

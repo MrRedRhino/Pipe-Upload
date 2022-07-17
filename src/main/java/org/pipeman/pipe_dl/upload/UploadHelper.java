@@ -1,7 +1,7 @@
 package org.pipeman.pipe_dl.upload;
 
 import org.pipeman.pipe_dl.Main;
-import org.pipeman.pipe_dl.files.PipeFile;
+import org.pipeman.pipe_dl.pipe_file.PipeFile;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,12 +14,12 @@ public class UploadHelper {
 
     public static String createUpload(String filename, PipeFile path, long uploaderId) throws IOException {
         String id = UUID.randomUUID().toString();
-        uploads.put(id, new RunningUpload(filename, path.id(), path.pageId(), Main.uid.newUID(), uploaderId));
+        uploads.put(id, new RunningUpload(filename, path.parent(), path.pageId(), Main.uid.newUID(), uploaderId));
         return id;
     }
 
 
-    public static boolean writeToUpload(String uploadID, byte[] data) throws IOException, RunningUpload.FileTooBigException {
+    public static boolean writeToUpload(String uploadID, byte[] data) throws IOException, PipeFile.FileTooBigException {
         RunningUpload upload = uploads.get(uploadID);
         if (upload == null) return false;
 
@@ -28,7 +28,7 @@ public class UploadHelper {
     }
 
 
-    public static boolean finishUpload(String uploadID) throws IOException {
+    public static boolean finishUpload(String uploadID) throws IOException, PipeFile.FileTooBigException {
         RunningUpload upload = uploads.get(uploadID);
         if (upload == null) return false;
 
