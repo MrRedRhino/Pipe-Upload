@@ -1,8 +1,8 @@
 package org.pipeman.pipe_dl.upload;
 
 import org.pipeman.pipe_dl.Main;
-import org.pipeman.pipe_dl.files.FileHelper;
-import org.pipeman.pipe_dl.files.PipeFile;
+import org.pipeman.pipe_dl.pipe_file.FileHelper;
+import org.pipeman.pipe_dl.pipe_file.PipeFile;
 import org.pipeman.pipe_dl.users.User;
 import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
 import org.pipeman.pipe_dl.util.pipe_route.RequestMethod;
@@ -73,7 +73,7 @@ public class UploadRouteRegisterer {
 
         try {
             if (!UploadHelper.writeToUpload(uploadId, request.bodyAsBytes())) return rb.addInvalidAndReturn("upload-id");
-        } catch (RunningUpload.FileTooBigException e) {
+        } catch (PipeFile.FileTooBigException e) {
             UploadHelper.cancelUpload(uploadId);
             return rb.addInvalidAndReturn("file-size");
         }
@@ -85,7 +85,12 @@ public class UploadRouteRegisterer {
         String uploadId = request.params("id");
         if (uploadId == null) return rb.addMissingAndReturn("upload-id");
 
-        if (!UploadHelper.finishUpload(uploadId)) return rb.addInvalidAndReturn("upload-id");
+        try {
+            if (!UploadHelper.finishUpload(uploadId)) return rb.addInvalidAndReturn("upload-id");
+        } catch (PipeFile.FileTooBigException e) {
+            UploadHelper.cancelUpload(uploadId);
+            return rb.addInvalidAndReturn("file-size");
+        }
         return rb.toString();
     }
 

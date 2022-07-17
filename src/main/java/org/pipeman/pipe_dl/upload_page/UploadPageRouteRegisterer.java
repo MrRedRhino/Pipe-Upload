@@ -1,8 +1,8 @@
 package org.pipeman.pipe_dl.upload_page;
 
 import org.pipeman.pipe_dl.Main;
-import org.pipeman.pipe_dl.files.FileHelper;
-import org.pipeman.pipe_dl.files.PipeFile;
+import org.pipeman.pipe_dl.pipe_file.FileHelper;
+import org.pipeman.pipe_dl.pipe_file.PipeFile;
 import org.pipeman.pipe_dl.util.misc.ModifiableFileHelper;
 import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
 import org.pipeman.pipe_dl.util.pipe_route.RouteUtil;

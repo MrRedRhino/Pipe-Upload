@@ -2,8 +2,7 @@ package org.pipeman.pipe_dl.upload;
 
 import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.upload_page.UploadPage;
-import org.pipeman.pipe_dl.files.FileHelper;
-import org.pipeman.pipe_dl.files.PipeFile;
+import org.pipeman.pipe_dl.pipe_file.PipeFile;
 
 import java.io.*;
 import java.util.Optional;
@@ -39,18 +38,20 @@ public class RunningUpload {
         os = new FileOutputStream(Main.config().uploadDir + id);
     }
 
-    public void writeToFile(byte[] data) throws IOException, FileTooBigException {
+    public void writeToFile(byte[] data) throws IOException, PipeFile.FileTooBigException {
         if (fileSize + data.length > maxSize) {
-            throw new FileTooBigException();
+            throw new PipeFile.FileTooBigException();
         }
 
         os.write(data);
         fileSize += data.length;
     }
 
-    public void uploadFileData() throws IOException {
+    public void uploadFileData() throws IOException, PipeFile.FileTooBigException {
         os.close();
-        FileHelper.uploadFile(new PipeFile(id, filename, uploadPageId, directoryId, uploaderId, false, fileSize));
+        PipeFile f = PipeFile.createFile(id, filename, uploadPageId, uploaderId, directoryId, fileSize);
+        if (f != null) f.save();
+        else deleteFile();
     }
 
     public void deleteFile() {
@@ -63,8 +64,5 @@ public class RunningUpload {
 
         //noinspection ResultOfMethodCallIgnored
         f.delete();
-    }
-
-    static class FileTooBigException extends Exception {
     }
 }
