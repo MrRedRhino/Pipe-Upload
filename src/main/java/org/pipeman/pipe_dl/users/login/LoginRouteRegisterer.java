@@ -70,6 +70,8 @@ public class LoginRouteRegisterer {
             if (CaptchaHelper.isCaptchaInvalid(captchaKey)) return rb.addInvalidAndReturn("captcha-key");
             return rb.addResponse("session-id", LoginHelper.forceLogin(user)).toString();
         }
+        rb.addInvalid("email");
+        rb.addInvalid("password");
 
         return rb.toString();
     }
