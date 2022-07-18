@@ -43,26 +43,22 @@ public class PipeFile {
                 .mapTo(PipeFile.class).list());
     }
 
+    public PipeFile createChildFolder(String name, long creatorId) {
+        long newId = Main.uid.newUID();
+        return new PipeFile(newId, name, pageId(), creatorId, false, 0, path() + "." + newId);
+    }
+
+    public PipeFile createChildFile(String name, long creatorId, long fileSize) {
+        long newId = Main.uid.newUID();
+        return new PipeFile(newId, name, pageId(), creatorId, false, fileSize, path() + "." + newId);
+    }
+
+    @Deprecated
     public static PipeFile createFile(long id, String name, long pageId, long creatorId, long parent, long size) {
         PipeFile parentFile = PipeFile.get(parent).orElse(null);
         if (parentFile == null || !parentFile.isFolder()) return null;
 
         return new PipeFile(id, name, pageId, creatorId, false, size, parentFile.path() + "." + id);
-    }
-
-    public static PipeFile createFile(String name, long pageId, long creatorId, long parent, long size) {
-        PipeFile parentFile = PipeFile.get(parent).orElse(null);
-        if (parentFile == null || !parentFile.isFolder()) return null;
-        long id = Main.uid.newUID();
-        return new PipeFile(id, name, pageId, creatorId, false, size, parentFile.path() + "." + id);
-    }
-
-    public static PipeFile createDir(String name, long pageId, long creatorId, long parent) {
-        long id = Main.uid.newUID();
-        PipeFile parentFile = PipeFile.get(parent).orElse(null);
-        if (parentFile == null || !parentFile.isFolder()) return null;
-
-        return new PipeFile(id, name, pageId, creatorId, true, 0, parentFile.path() + "." + id);
     }
 
     public File toJavaFile() {
@@ -144,14 +140,14 @@ public class PipeFile {
         try {
             jdbi().useHandle(handle -> handle.createUpdate("""
                             INSERT INTO files (id, name, page_id, creator_id, is_folder, size, path)
-                            VALUES ((?), (?), (?), (?), (?), (?), (?))
+                            VALUES ((?), (?), (?), (?), (?), (?), (?)::ltree)
                             ON CONFLICT (id) DO UPDATE SET id         = (?),
                                                            name       = (?),
                                                            page_id    = (?),
                                                            creator_id = (?),
                                                            is_folder  = (?),
                                                            size       = (?),
-                                                           path       = (?)
+                                                           path       = (?)::ltree
                                                            """)
                     .bind(0, id())
                     .bind(1, name())
@@ -171,6 +167,7 @@ public class PipeFile {
         } catch (UnableToExecuteStatementException e) {
             if (e.getCause().getMessage().equalsIgnoreCase("ERROR: Available storage space exceeded."))
                 throw new PipeFile.FileTooBigException();
+            else e.printStackTrace();
         }
     }
 
