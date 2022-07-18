@@ -8,3 +8,4 @@
 - [ ] Rate-limit
 - [ ] Extra captcha checks
 - [ ] Send mails
+- [ ] Path class for easier filepath management
