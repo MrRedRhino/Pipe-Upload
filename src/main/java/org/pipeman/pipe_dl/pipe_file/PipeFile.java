@@ -130,7 +130,8 @@ public class PipeFile {
 
     public void delete() {
         final List<DeletedFile> deletedFiles = jdbi().withHandle(handle ->
-                handle.createQuery("DELETE FROM files WHERE path <@ '0.2' RETURNING id, is_folder")
+                handle.createQuery("DELETE FROM files WHERE path <@ (?)::ltree RETURNING id, is_folder")
+                        .bind(0, path())
                         .mapTo(DeletedFile.class)
                         .list()
         );
