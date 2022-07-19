@@ -2,7 +2,6 @@ package org.pipeman.pipe_dl.pipe_file;
 
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.pipeman.pipe_dl.Main;
-import org.pipeman.pipe_dl.util.misc.Utils;
 
 import java.beans.ConstructorProperties;
 import java.io.File;
@@ -11,21 +10,30 @@ import java.util.Optional;
 
 import static org.pipeman.pipe_dl.DB.jdbi;
 
-public class PipeFile {
+public class PipeFile extends PipePath {
     private final long id;
     private final long pageId;
     private final long creatorId;
     private final boolean isFolder;
     private final long size;
     private String name;
-    private final String path;
 
     @ConstructorProperties({"id", "name", "page_id", "creator_id", "is_folder", "size", "path"})
     public PipeFile(long id, String name, long pageId, long creatorId, boolean isFolder, long size, String path) {
+        super(path);
         this.id = id;
         this.name = name;
         this.pageId = pageId;
-        this.path = path;
+        this.creatorId = creatorId;
+        this.isFolder = isFolder;
+        this.size = size;
+    }
+
+    public PipeFile(long id, String name, long pageId, long creatorId, boolean isFolder, long size, PipePath path) {
+        super(path.path());
+        this.id = id;
+        this.name = name;
+        this.pageId = pageId;
         this.creatorId = creatorId;
         this.isFolder = isFolder;
         this.size = size;
@@ -38,19 +46,9 @@ public class PipeFile {
     }
 
     public static List<PipeFile> getChildren(long id) {
-        return jdbi().withHandle(handle -> handle.createQuery(
-                "SELECT * FROM files WHERE path ~ '*." + id + ".*{1}' ORDER BY name")
+        return jdbi().withHandle(handle -> handle
+                .createQuery("SELECT * FROM files WHERE path ~ '*." + id + ".*{1}' ORDER BY name")
                 .mapTo(PipeFile.class).list());
-    }
-
-    public PipeFile createChildFolder(String name, long creatorId) {
-        long newId = Main.uid.newUID();
-        return new PipeFile(newId, name, pageId(), creatorId, false, 0, path() + "." + newId);
-    }
-
-    public PipeFile createChildFile(String name, long creatorId, long fileSize) {
-        long newId = Main.uid.newUID();
-        return new PipeFile(newId, name, pageId(), creatorId, false, fileSize, path() + "." + newId);
     }
 
     @Deprecated
@@ -58,7 +56,17 @@ public class PipeFile {
         PipeFile parentFile = PipeFile.get(parent).orElse(null);
         if (parentFile == null || !parentFile.isFolder()) return null;
 
-        return new PipeFile(id, name, pageId, creatorId, false, size, parentFile.path() + "." + id);
+        return new PipeFile(id, name, pageId, creatorId, false, size, parentFile.addChild(id));
+    }
+
+    public PipeFile createChildFolder(String name, long creatorId) {
+        long newId = Main.uid.newUID();
+        return new PipeFile(newId, name, pageId(), creatorId, false, 0, addChild(newId));
+    }
+
+    public PipeFile createChildFile(String name, long creatorId, long fileSize) {
+        long newId = Main.uid.newUID();
+        return new PipeFile(newId, name, pageId(), creatorId, false, fileSize, addChild(newId));
     }
 
     public File toJavaFile() {
@@ -80,23 +88,6 @@ public class PipeFile {
     public PipeFile name(String newName) {
         this.name = newName;
         return this;
-    }
-
-    public PipeFile adopt(long newParentId) {
-        return this;
-    }
-
-    public String path() {
-        return path;
-    }
-
-    public long parent() {
-        long[] ancestors = ancestors();
-        return ancestors[Math.max(ancestors.length - 2, 0)];
-    }
-
-    public long[] ancestors() {
-        return Utils.parseToLongArray(path().split("\\."));
     }
 
     public long creatorId() {
@@ -125,11 +116,11 @@ public class PipeFile {
     }
 
     public void delete() {
-        final List<DeletedFile> deletedFiles = jdbi().withHandle(handle ->
-                handle.createQuery("DELETE FROM files WHERE path <@ (?)::ltree RETURNING id, is_folder")
-                        .bind(0, path())
-                        .mapTo(DeletedFile.class)
-                        .list()
+        final List<DeletedFile> deletedFiles = jdbi().withHandle(handle -> handle
+                .createQuery("DELETE FROM files WHERE path <@ (?)::ltree RETURNING id, is_folder")
+                .bind(0, path())
+                .mapTo(DeletedFile.class)
+                .list()
         );
         for (DeletedFile f : deletedFiles) {
             if (!f.isFolder()) FileDeleter.deleteFile(f.id());
@@ -155,31 +146,20 @@ public class PipeFile {
                     .bind(3, creatorId())
                     .bind(4, isFolder())
                     .bind(5, size())
-                    .bind(6, path())
+                    .bind(6, super.toString())
                     .bind(7, id())
                     .bind(8, name())
                     .bind(9, pageId())
                     .bind(10, creatorId())
                     .bind(11, isFolder())
                     .bind(12, size())
-                    .bind(13, path())
+                    .bind(13, super.toString())
                     .execute());
         } catch (UnableToExecuteStatementException e) {
             if (e.getCause().getMessage().equalsIgnoreCase("ERROR: Available storage space exceeded."))
                 throw new PipeFile.FileTooBigException();
             else e.printStackTrace();
         }
-    }
-
-    @Override
-    public String toString() {
-        return "PipeFile{" +
-               "id=" + id +
-               ", pageId=" + pageId +
-               ", isFolder=" + isFolder +
-               ", name='" + name + '\'' +
-               ", path='" + path + '\'' +
-               '}';
     }
 
     public static class FileTooBigException extends Exception {

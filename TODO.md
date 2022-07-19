@@ -1,11 +1,11 @@
-- [x] Upload limit
-- [x] Store filesize
 - [ ] Access links
 - [ ] Access tokens like discord tokens
 - [ ] Account creation, settings, email verification
+- [ ] Extra captcha checks
 - [ ] Make upload fancier
 - [ ] Permissions (somehow)
 - [ ] Rate-limit
-- [ ] Extra captcha checks
 - [ ] Send mails
-- [ ] Path class for easier filepath management
+- [x] Path class for easier filepath management
+- [x] Store filesize
+- [x] Upload limit

@@ -59,7 +59,8 @@ public class FileApiRouteRegisterer {
                             PipeFile newFile = PipeFile.get(newId).orElse(null);
                             if (newFile == null) return rb.addInvalidAndReturn("new-directory-id");
 
-                            file.adopt(newFile.parent()).save();
+                            file.setPath(newFile.path());
+                            file.save();
                         }
                         case "rename" -> {
                             String newName = rb.getHeader("new-filename");
