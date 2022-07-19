@@ -23,10 +23,7 @@ public class User {
     }
 
     public User(String name, String password, String email) {
-        this.id = Main.uid.newUID();
-        this.name = name;
-        this.password = password;
-        this.email = email;
+        this(Main.uid.newUID(), name, password, email);
     }
 
     public static Optional<User> getByEmail(String email) {
