@@ -153,7 +153,7 @@ public class PipeFile extends PipePath {
                     .bind(10, creatorId())
                     .bind(11, isFolder())
                     .bind(12, size())
-                    .bind(13, super.toString())
+                    .bind(13, super.toString()) // I *think* i made a trigger for this
                     .execute());
         } catch (UnableToExecuteStatementException e) {
             if (e.getCause().getMessage().equalsIgnoreCase("ERROR: Available storage space exceeded."))
