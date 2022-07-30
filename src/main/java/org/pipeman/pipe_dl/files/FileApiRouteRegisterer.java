@@ -1,5 +1,7 @@
 package org.pipeman.pipe_dl.files;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.pipeman.pipe_dl.pipe_file.FileHelper;
 import org.pipeman.pipe_dl.pipe_file.PipeFile;
 import org.pipeman.pipe_dl.users.User;
@@ -49,6 +51,7 @@ public class FileApiRouteRegisterer {
                     - rename
                     - write
                     - close
+                    - copy files and folders (TODO)
                      */
 
                     switch (action) {
@@ -58,6 +61,7 @@ public class FileApiRouteRegisterer {
                             rb.haltIfErrors();
                             PipeFile newFile = PipeFile.get(newId).orElse(null);
                             if (newFile == null) return rb.addInvalidAndReturn("new-directory-id");
+                            if (!newFile.isFolder()) return rb.addInvalidAndReturn("new-directory-type");
 
                             file.setPath(newFile.path());
                             file.save();
@@ -66,6 +70,9 @@ public class FileApiRouteRegisterer {
                             String newName = rb.getHeader("new-filename");
                             rb.haltIfErrors();
                             file.name(newName).save();
+                        }
+                        case "copy" -> {
+
                         }
                     }
 
@@ -80,9 +87,29 @@ public class FileApiRouteRegisterer {
                     PipeFile file = FileHelper.getFile(request.splat()[0]);
                     if (file == null) return rb.addInvalidAndReturn("file-id");
 
-                    handleDownload(file, response);
+                    if (file.isFolder()) {
+                        JSONArray fileList = new JSONArray();
+                        for (PipeFile child : PipeFile.getChildren(file.id())) {
+                            fileList.put(serializeFile(child));
+                        }
+                        return rb.addResponse("files", fileList.toString()).toString();
+                    } else {
+                        handleDownload(file, response);
+                    }
                     return "";
                 }).buildAndRegister();
+    }
+
+    private String serializeFile(PipeFile file) {
+        JSONObject out = new JSONObject();
+        out.put("id", file.id());
+        out.put("name", file.name());
+        out.put("is-folder", file.isFolder());
+        out.put("page-id", file.pageId());
+        out.put("creator", file.creatorId());
+        out.put("size", file.size());
+        out.put("path", file.path());
+        return out.toString();
     }
 
     private void handleDownload(PipeFile file, Response response) throws IOException {
