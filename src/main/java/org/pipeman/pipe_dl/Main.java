@@ -66,9 +66,8 @@ public class Main {
         registrationRouteRegisterer = new RegistrationRouteRegisterer();
         fileApiRouteRegisterer = new FileApiRouteRegisterer();
 
-        DB.connect();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            DB.disconnect();
+            DB.INSTANCE.disconnect();
             Spark.stop();
         }));
 
