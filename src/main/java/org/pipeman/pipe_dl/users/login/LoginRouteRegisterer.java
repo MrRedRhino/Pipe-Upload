@@ -2,6 +2,7 @@ package org.pipeman.pipe_dl.users.login;
 
 import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.captcha.CaptchaHelper;
+import org.pipeman.pipe_dl.upload_page.UploadPage;
 import org.pipeman.pipe_dl.users.User;
 import org.pipeman.pipe_dl.util.misc.ModifiableFileHelper;
 import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
@@ -10,6 +11,7 @@ import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 import spark.Request;
 import spark.Response;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class LoginRouteRegisterer {
@@ -44,8 +46,23 @@ public class LoginRouteRegisterer {
 
 
         new PipeRouteBuilder("/accounts/logged-in")
-                .handle((user, request, response) -> ModifiableFileHelper.copyFile(Main.config().loggedIn, response,
-                        Map.of("!username", user.name())))
+                .handle((user, request, response) -> {
+                    Map<String, String> toReplace = new HashMap<>();
+                    toReplace.put("!username", user.name());
+
+                    UploadPage uploadPage = user.getUploadPage();
+                    if (uploadPage != null) {
+                        toReplace.put("!hide-create", "hidden");
+                        toReplace.put("!hide-goto", "");
+                        toReplace.put("!up-id", String.valueOf(uploadPage.id()));
+                    } else {
+                        toReplace.put("!hide-create", "");
+                        toReplace.put("!hide-goto", "hidden");
+                        toReplace.put("!up-id", "0");
+                    }
+
+                    return ModifiableFileHelper.copyFile(Main.config().loggedIn, response, toReplace);
+                })
                 .buildAndRegister();
 
 

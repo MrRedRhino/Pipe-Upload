@@ -3,9 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Logged-In</title>
+    <style>
+        .sidebar {
+            width: 200px;
+            height: 100%;
+            background-color: lightgray;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 0 10px 10px 10px;
+        }
+
+        a {
+            text-decoration: none;
+            font-size: 20px;
+        }
+
+        * {
+            font-family: Arial, serif;
+        }
+    </style>
 </head>
 <body>
-    <p>You're logged in, !username</p>
-    <a href="/accounts/logout">Logout</a>
+<h1 style="font-family: Arial, serif;  color: forestgreen; margin-left: 230px; margin-top: 40px">Hello, !username</h1>
+<input style="margin-left: 230px; margin-top: 40px" type="button" onclick="createUploadPage()"
+       value="Create an upload page" !hide-create>
+<input style="margin-left: 230px; margin-top: 40px" type="button" onclick="goToUploadPage()"
+       value="Go to my upload page" !hide-goto>
+
+<div class="sidebar">
+    <ul style="list-style: none">
+        <li><a href="logout.html" style="color: forestgreen">Logout</a></li>
+    </ul>
+</div>
 </body>
+<script>
+    function createUploadPage() {
+        fetch("/api/upload-pages/create", {
+            method: "PUT",
+            headers: {
+                "name": "!username's Files"
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                response.json().then(j => {
+                    location.href = "/files/" + j["new-id"];
+                });
+            }
+        });
+    }
+
+    function goToUploadPage() {
+        location.href = "/files/!up-id"
+    }
+</script>
 </html>

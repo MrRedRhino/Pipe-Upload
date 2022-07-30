@@ -72,7 +72,6 @@ public class UploadPageRouteRegisterer {
         builder.append("</tr>\n");
     }
 
-
     private String viewFile(PipeFile file, Response response) {
         Map<String, String> replacements = new HashMap<>(Map.of(
                 "!name", file.name(),
