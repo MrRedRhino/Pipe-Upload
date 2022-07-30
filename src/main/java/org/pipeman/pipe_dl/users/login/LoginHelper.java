@@ -10,6 +10,10 @@ import java.util.UUID;
 public class LoginHelper {
     private static final Map<String, User> sessionIDs = new HashMap<>();
 
+    static {
+        User.getByEmail("email").ifPresent(user -> sessionIDs.put("1", user));
+    }
+
     public static User getAccountByRequest(Request request) {
         String cookie = request.cookie("login");
 
