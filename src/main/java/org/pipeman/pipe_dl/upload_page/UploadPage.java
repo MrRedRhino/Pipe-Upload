@@ -14,7 +14,7 @@ public class UploadPage {
     private final long ownerId;
     private final long rootDirId;
     private final long totalBytes;
-    private long usedBytes;
+    private final long usedBytes;
 
     @ConstructorProperties({"name", "id", "owner_id", "root_dir_id", "total_bytes", "used_bytes"})
     public UploadPage(String name, long id, long ownerId, long rootDirId, long totalBytes, long usedBytes) {
@@ -36,7 +36,7 @@ public class UploadPage {
     public static UploadPage createUploadPage(String name, long ownerId, long totalBytes) {
         long id = Main.uid.newUID();
         try {
-            new PipeFile(id, name, id, ownerId, true, 0, id + "").save();
+            new PipeFile(id, "Root", id, ownerId, true, 0, id + "").save();
         } catch (PipeFile.FileTooBigException ignored) {
             return null;
         }
@@ -71,22 +71,26 @@ public class UploadPage {
 
     public void save() {
         jdbi().useHandle(handle -> handle.createUpdate(
-                        "INSERT INTO upload_pages (name, id, owner_id, root_dir_id, total_bytes, used_bytes) VALUES (" +
-                        "(?), (?), (?), (?), (?), (?)) " +
-                        "ON CONFLICT (id) DO UPDATE SET name = (?), owner_id = (?), root_dir_id = (?), total_bytes = " +
-                        "(?), used_bytes = (?)")
+                        """
+                                INSERT INTO upload_pages (name, id, owner_id, root_dir_id, total_bytes, used_bytes)
+                                VALUES ((?), (?), (?), (?), (?), (?))
+                                ON CONFLICT (id) DO UPDATE SET name        = (?),
+                                                               owner_id    = (?),
+                                                               root_dir_id = (?),
+                                                               total_bytes = (?),
+                                                               used_bytes  = (?)
+                                """)
                 .bind(0, name())
-                .bind(1, ownerId())
-                .bind(2, rootDirId())
-                .bind(3, totalBytes())
-                .bind(4, usedBytes())
-                .bind(5, id())
+                .bind(1, id())
+                .bind(2, ownerId())
+                .bind(3, rootDirId())
+                .bind(4, totalBytes())
+                .bind(5, usedBytes())
                 .bind(6, name())
                 .bind(7, ownerId())
                 .bind(8, rootDirId())
                 .bind(9, totalBytes())
                 .bind(10, usedBytes())
-                .bind(11, id())
                 .execute()
         );
     }

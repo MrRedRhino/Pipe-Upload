@@ -1,6 +1,7 @@
 package org.pipeman.pipe_dl.users;
 
 import org.pipeman.pipe_dl.Main;
+import org.pipeman.pipe_dl.upload_page.UploadPage;
 import org.pipeman.pipe_dl.util.security.PasswordSpicer;
 
 import java.beans.ConstructorProperties;
@@ -10,9 +11,9 @@ import static org.pipeman.pipe_dl.DB.jdbi;
 
 public class User {
     private final long id;
+    private final String email;
     private String name;
     private String password;
-    private final String email;
 
     @ConstructorProperties({"id", "name", "password", "email"})
     public User(long id, String name, String password, String email) {
@@ -64,9 +65,20 @@ public class User {
         return false;
     }
 
+    public UploadPage getUploadPage() {
+        return jdbi().withHandle(handle -> handle.createQuery("""
+                        SELECT *
+                        FROM upload_pages
+                        WHERE owner_id = (?)
+                        """)
+                .bind(0, id())
+                .mapTo(UploadPage.class)
+                .findFirst()).orElse(null);
+    }
+
     public void save() {
         jdbi().useHandle(handle -> handle.createUpdate(
-                "INSERT INTO users (id, name, password, email) VALUES ((?), (?), (?), (?))" +
+                        "INSERT INTO users (id, name, password, email) VALUES ((?), (?), (?), (?))" +
                         " ON CONFLICT (id) DO UPDATE SET name = (?), password = (?), email = (?)")
                 .bind(0, id)
                 .bind(1, name)

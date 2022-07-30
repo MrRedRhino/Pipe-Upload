@@ -5,11 +5,12 @@ import org.pipeman.pipe_dl.pipe_file.FileHelper;
 import org.pipeman.pipe_dl.pipe_file.PipeFile;
 import org.pipeman.pipe_dl.util.misc.ModifiableFileHelper;
 import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
+import org.pipeman.pipe_dl.util.pipe_route.RequestMethod;
+import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
 import org.pipeman.pipe_dl.util.pipe_route.RouteUtil;
+import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 import spark.Response;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,44 +42,29 @@ public class UploadPageRouteRegisterer {
                 })
                 .buildAndRegister();
 
+        new PipeRouteBuilder(RoutePrefixes.API, "/upload-pages/create")
+                .acceptMethod(RequestMethod.PUT)
+                .handle((user, request, response) -> {
+                    ResponseBuilder rb = new ResponseBuilder(request, response, Map.of("new-id", ""));
+                    String name = rb.getHeader("name");
+                    rb.haltIfErrors();
 
-        new PipeRouteBuilder("/files/:file-id/*")
-                .handle((request, response) -> {
-                    if (request.splat().length == 0) return RouteUtil.msg("Not found", response, 404);
-                    String action = request.splat()[0];
-                    PipeFile file = FileHelper.getFile(request.params("file-id"));
-                    if (file == null) return RouteUtil.msg("Not found", response, 404);
+                    if (user.getUploadPage() != null) return rb.addInvalidAndReturn("upload-page-count");
 
-                    if (action.equals("download")) {
-                        response.header("Content-Disposition", "attachment;filename=" + file.name());
-                        response.header("Content-Length", String.valueOf(file.size()));
+                    UploadPage page = UploadPage.createUploadPage(name, user.id(), 1_073_741_824L * 100); // 100 GB
+                    if (page == null) return RouteUtil.msg("Creating the upload page failed. " +
+                                                           "We are sorry for the inconvenience. " +
+                                                           "Please report this issue.", response, 500);
 
-                        try {
-                            Files.copy(file.toJavaFile().toPath(), response.raw().getOutputStream());
-                        } catch (IOException ignored) {
-                        }
-                        return "";
-                    }
-
-                    if (action.equals("stream")) {
-                        response.header("Content-Length", String.valueOf(file.size()));
-                        response.status(206);
-
-                        try {
-                            Files.copy(file.toJavaFile().toPath(), response.raw().getOutputStream());
-                        } catch (IOException ignored) {
-                        }
-                        return "";
-                    }
-
-                    return RouteUtil.msg("Unknown action", response, 400);
+                    rb.addResponse("new-id", page.id());
+                    return rb.toString();
                 })
                 .buildAndRegister();
     }
 
     private void addTableEntry(StringBuilder builder, PipeFile file) {
         builder.append("<tr><td><img src=\"").append(file.isFolder() ? "/images/folder-icon-64.png" : "/images/file" +
-                "-icon-64.png");
+                                                                                                      "-icon-64.png");
         builder.append("\" height=\"20px\" alt=\"Folder\"></td>\n");
         builder.append("<td><a href=\"").append("/files/").append(file.id()).append("\">");
         builder.append(file.name()).append(file.isFolder() ? "/" : "").append("</a></td>\n");
@@ -96,17 +82,16 @@ public class UploadPageRouteRegisterer {
         ));
 
         switch (file.extension()) {
-            case ".jpg", ".jpeg", ".png", ".gif" ->
-                    replacements.put("!extra-content",
-                            "<img src=\"/files/" + file.id() + "/stream\" alt=\"" + file.name() + "\">");
+            case ".jpg", ".jpeg", ".png", ".gif" -> replacements.put("!extra-content",
+                    "<img src=\"/files/" + file.id() + "/stream\" alt=\"" + file.name() + "\">");
 
             case ".mp3", ".wav", ".flac", ".ogg" ->
                     replacements.put("!extra-content", "<audio controls><source src=\"/files/" + file.id() + "/stream" +
-                            "\" type=\"audio/mpeg\"></audio>");
+                                                       "\" type=\"audio/mpeg\"></audio>");
 
             case ".mp4", ".webm", ".mkv", ".avi" ->
                     replacements.put("!extra-content", "<video controls><source src=\"/files/" + file.id() + "/stream" +
-                            "\" type=\"video/mp4\"></video>");
+                                                       "\" type=\"video/mp4\"></video>");
 
             default -> replacements.put("!extra-content", "");
         }
