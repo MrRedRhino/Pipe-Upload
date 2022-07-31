@@ -22,18 +22,39 @@
         * {
             font-family: Arial, serif;
         }
+
+        .button {
+            margin-bottom: 15px;
+            box-shadow: 0 9px #999;
+            cursor: pointer;
+            font-size: 20px;
+            border: none;
+            background: lightgrey;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background-color: #3e8e41;
+            opacity: 80%;
+        }
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
     </style>
 </head>
 <body>
 <h1 style="font-family: Arial, serif;  color: forestgreen; margin-left: 230px; margin-top: 40px">Hello, !username</h1>
-<input style="margin-left: 230px; margin-top: 40px" type="button" onclick="createUploadPage()"
+<input class="button" style="background-color: forestgreen; color: lightgrey; margin-left: 230px; margin-top: 40px" type="button" onclick="createUploadPage()"
        value="Create an upload page" !hide-create>
-<input style="margin-left: 230px; margin-top: 40px" type="button" onclick="goToUploadPage()"
+<input class="button" style="background-color: forestgreen; color: lightgrey; margin-left: 230px; margin-top: 40px" type="button" onclick="goToUploadPage()"
        value="Go to my upload page" !hide-goto>
 
 <div class="sidebar">
     <ul style="list-style: none">
-        <li><a href="logout.html" style="color: forestgreen">Logout</a></li>
+        <li><a href="/accounts/logout" style="color: forestgreen">Logout</a></li>
     </ul>
 </div>
 </body>
