@@ -16,8 +16,6 @@ import org.pipeman.pipe_dl.util.pipe_route.PipeRoute;
 import org.pipeman.pipe_dl.util.uid.UID;
 import spark.Spark;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.pipeman.pipe_dl.DB.jdbi;
@@ -41,20 +39,9 @@ public class Main {
                 config().uidGeneratorGen,
                 config().uidGeneratorSequence));
 
+        Spark.externalStaticFileLocation("static");
         Spark.port(config().serverPort);
         Spark.init();
-
-        PipeRoute.builder("/images/:file")
-                .handle((request, response) -> {
-                    String file = request.params("file");
-                    if (file == null) Spark.halt(404);
-
-                    File f = new File(Main.config().imagesDir + "/" + file);
-                    if (!f.exists()) Spark.halt(404);
-                    if (!f.getParentFile().getName().equals(Main.config().imagesDir)) Spark.halt(404);
-                    Files.copy(f.toPath(), response.raw().getOutputStream());
-                    return "";
-                }).buildAndRegister();
 
         PipeRoute.builder("/")
                 .handle(config().index)
