@@ -82,11 +82,12 @@ public class LoginRouteRegisterer {
 
         rb.haltIfErrors();
 
+        if (CaptchaHelper.isCaptchaInvalid(captchaKey)) return rb.addInvalidAndReturn("captcha-key");
+
         User user = User.getByEmail(email).orElse(null);
-        if (user != null && user.authCorrect(email, password)) {
-            if (CaptchaHelper.isCaptchaInvalid(captchaKey)) return rb.addInvalidAndReturn("captcha-key");
+        if (user != null && user.authCorrect(email, password))
             return rb.addResponse("session-id", LoginHelper.forceLogin(user)).toString();
-        }
+
         rb.addInvalid("email");
         rb.addInvalid("password");
 
