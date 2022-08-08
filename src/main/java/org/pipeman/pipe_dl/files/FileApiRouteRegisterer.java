@@ -52,6 +52,7 @@ public class FileApiRouteRegisterer {
                     - write
                     - close
                     - copy files and folders (TODO)
+                    - create folder (TODO)
                      */
 
                     switch (action) {
@@ -92,7 +93,7 @@ public class FileApiRouteRegisterer {
                         for (PipeFile child : PipeFile.getChildren(file.id())) {
                             fileList.put(serializeFile(child));
                         }
-                        return rb.addResponse("files", fileList.toString()).toString();
+                        return rb.addResponse("files", fileList).toString();
                     } else {
                         handleDownload(file, response);
                     }
@@ -100,7 +101,7 @@ public class FileApiRouteRegisterer {
                 }).buildAndRegister();
     }
 
-    private String serializeFile(PipeFile file) {
+    private JSONObject serializeFile(PipeFile file) {
         JSONObject out = new JSONObject();
         out.put("id", file.id());
         out.put("name", file.name());
@@ -108,8 +109,9 @@ public class FileApiRouteRegisterer {
         out.put("page-id", file.pageId());
         out.put("creator", file.creatorId());
         out.put("size", file.size());
+        out.put("size-formatted", file.stringSize());
         out.put("path", file.path());
-        return out.toString();
+        return out;
     }
 
     private void handleDownload(PipeFile file, Response response) throws IOException {
