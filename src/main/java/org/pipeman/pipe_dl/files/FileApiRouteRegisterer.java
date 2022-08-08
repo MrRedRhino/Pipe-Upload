@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import org.pipeman.pipe_dl.pipe_file.FileHelper;
 import org.pipeman.pipe_dl.pipe_file.PipeFile;
 import org.pipeman.pipe_dl.users.User;
-import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
+import org.pipeman.pipe_dl.util.pipe_route.PipeRoute;
 import org.pipeman.pipe_dl.util.pipe_route.RequestMethod;
 import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
 import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
@@ -23,17 +23,17 @@ public class FileApiRouteRegisterer {
     }
 
     private void registerRoutes() {
-        new PipeRouteBuilder(RoutePrefixes.API, "/files/create-file")
+        PipeRoute.builder(RoutePrefixes.API, "/files/create-file")
                 .acceptMethod(RequestMethod.POST)
                 .handle((user, request, response) -> createFileOrFolder(user, request, response, true))
                 .buildAndRegister();
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/files/create-folder")
+        PipeRoute.builder(RoutePrefixes.API, "/files/create-folder")
                 .acceptMethod(RequestMethod.POST)
                 .handle((user, request, response) -> createFileOrFolder(user, request, response, false))
                 .buildAndRegister();
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/files/*")
+        PipeRoute.builder(RoutePrefixes.API, "/files/*")
                 .acceptMethod(RequestMethod.POST)
                 .handle((user, request, response) -> {
                     ResponseBuilder rb = new ResponseBuilder(request, response);
@@ -79,7 +79,7 @@ public class FileApiRouteRegisterer {
                     return rb.toString();
                 }).buildAndRegister();
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/files/*")
+        PipeRoute.builder(RoutePrefixes.API, "/files/*")
                 .handle((request, response) -> {
                     ResponseBuilder rb = new ResponseBuilder(request, response);
 

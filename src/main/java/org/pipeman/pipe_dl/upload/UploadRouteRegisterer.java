@@ -4,7 +4,7 @@ import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.pipe_file.FileHelper;
 import org.pipeman.pipe_dl.pipe_file.PipeFile;
 import org.pipeman.pipe_dl.users.User;
-import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
+import org.pipeman.pipe_dl.util.pipe_route.PipeRoute;
 import org.pipeman.pipe_dl.util.pipe_route.RequestMethod;
 import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
 import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
@@ -22,26 +22,26 @@ public class UploadRouteRegisterer {
     }
 
     private void registerRoutes() {
-        new PipeRouteBuilder("/upload")
+        PipeRoute.builder("/upload")
                 .handle(Main.config().upload)
                 .buildAndRegister();
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/upload/create")
+        PipeRoute.builder(RoutePrefixes.API, "/upload/create")
                 .handle(this::startUpload)
                 .acceptMethod(RequestMethod.POST)
                 .buildAndRegister();
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/upload/upload/:id")
+        PipeRoute.builder(RoutePrefixes.API, "/upload/upload/:id")
                 .handle(this::upload)
                 .acceptMethod(RequestMethod.POST)
                 .buildAndRegister();
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/upload/finish/:id")
+        PipeRoute.builder(RoutePrefixes.API, "/upload/finish/:id")
                 .handle(this::finishUpload)
                 .acceptMethod(RequestMethod.POST)
                 .buildAndRegister();
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/upload/cancel/:id")
+        PipeRoute.builder(RoutePrefixes.API, "/upload/cancel/:id")
                 .handle(this::cancelUpload)
                 .acceptMethod(RequestMethod.POST)
                 .buildAndRegister();

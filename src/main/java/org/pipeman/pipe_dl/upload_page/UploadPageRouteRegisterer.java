@@ -4,10 +4,7 @@ import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.pipe_file.FileHelper;
 import org.pipeman.pipe_dl.pipe_file.PipeFile;
 import org.pipeman.pipe_dl.util.misc.ModifiableFileHelper;
-import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
-import org.pipeman.pipe_dl.util.pipe_route.RequestMethod;
-import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
-import org.pipeman.pipe_dl.util.pipe_route.RouteUtil;
+import org.pipeman.pipe_dl.util.pipe_route.*;
 import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 import spark.Response;
 
@@ -20,7 +17,7 @@ public class UploadPageRouteRegisterer {
     }
 
     private void registerRoutes() {
-        new PipeRouteBuilder("/files/:file-id")
+        PipeRoute.builder("/files/:file-id")
                 .handle((request, response) -> {
                     PipeFile folderFile = FileHelper.getFile(request.params("file-id"));
                     if (folderFile == null) return RouteUtil.msg("Not found", response, 404);
@@ -42,7 +39,7 @@ public class UploadPageRouteRegisterer {
                 })
                 .buildAndRegister();
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/upload-pages/create")
+        PipeRoute.builder(RoutePrefixes.API, "/upload-pages/create")
                 .acceptMethod(RequestMethod.PUT)
                 .handle((user, request, response) -> {
                     ResponseBuilder rb = new ResponseBuilder(request, response, Map.of("new-id", ""));

@@ -4,7 +4,7 @@ import org.pipeman.pipe_dl.Main;
 import org.pipeman.pipe_dl.captcha.CaptchaHelper;
 import org.pipeman.pipe_dl.users.User;
 import org.pipeman.pipe_dl.users.login.LoginHelper;
-import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
+import org.pipeman.pipe_dl.util.pipe_route.PipeRoute;
 import org.pipeman.pipe_dl.util.pipe_route.RequestMethod;
 import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
 import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
@@ -20,11 +20,11 @@ public class RegistrationRouteRegisterer {
     }
 
     private void registerRoutes() {
-        new PipeRouteBuilder("/accounts/register")
+        PipeRoute.builder("/accounts/register")
                 .handle(Main.config().register)
                 .buildAndRegister();
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/accounts/register")
+        PipeRoute.builder(RoutePrefixes.API, "/accounts/register")
                 .acceptMethod(RequestMethod.POST)
                 .handle(this::handleRegistration)
                 .buildAndRegister();

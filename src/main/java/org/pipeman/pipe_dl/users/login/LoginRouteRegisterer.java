@@ -5,7 +5,7 @@ import org.pipeman.pipe_dl.captcha.CaptchaHelper;
 import org.pipeman.pipe_dl.upload_page.UploadPage;
 import org.pipeman.pipe_dl.users.User;
 import org.pipeman.pipe_dl.util.misc.ModifiableFileHelper;
-import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
+import org.pipeman.pipe_dl.util.pipe_route.PipeRoute;
 import org.pipeman.pipe_dl.util.pipe_route.RoutePrefixes;
 import org.pipeman.pipe_dl.util.response_builder.ResponseBuilder;
 import spark.Request;
@@ -22,18 +22,18 @@ public class LoginRouteRegisterer {
 
     private void registerRoutes() {
 
-        new PipeRouteBuilder("/").handle((request, response) -> {
+        PipeRoute.builder("/").handle((request, response) -> {
             response.redirect("/accounts/login");
             return "";
         }).buildAndRegister();
 
 
-        new PipeRouteBuilder("/accounts/login")
+        PipeRoute.builder("/accounts/login")
                 .handle(Main.config().login)
                 .buildAndRegister();
 
 
-        new PipeRouteBuilder("/accounts/logout")
+        PipeRoute.builder("/accounts/logout")
                 .handle(Main.config().logout)
                 .handle((request, response) -> {
                     String cookie = request.cookie("login");
@@ -45,7 +45,7 @@ public class LoginRouteRegisterer {
                 }).buildAndRegister();
 
 
-        new PipeRouteBuilder("/accounts/logged-in")
+        PipeRoute.builder("/accounts/logged-in")
                 .handle((user, request, response) -> {
                     Map<String, String> toReplace = new HashMap<>();
                     toReplace.put("!username", user.name());
@@ -66,7 +66,7 @@ public class LoginRouteRegisterer {
                 .buildAndRegister();
 
 
-        new PipeRouteBuilder(RoutePrefixes.API, "/accounts/login")
+        PipeRoute.builder(RoutePrefixes.API, "/accounts/login")
                 .handle(this::handleLogin).buildAndRegister();
     }
 

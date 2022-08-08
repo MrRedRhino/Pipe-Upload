@@ -12,7 +12,7 @@ import org.pipeman.pipe_dl.upload_page.UploadPageRouteRegisterer;
 import org.pipeman.pipe_dl.users.User;
 import org.pipeman.pipe_dl.users.login.LoginRouteRegisterer;
 import org.pipeman.pipe_dl.users.registration.RegistrationRouteRegisterer;
-import org.pipeman.pipe_dl.util.pipe_route.PipeRouteBuilder;
+import org.pipeman.pipe_dl.util.pipe_route.PipeRoute;
 import org.pipeman.pipe_dl.util.uid.UID;
 import spark.Spark;
 
@@ -44,7 +44,7 @@ public class Main {
         Spark.port(config().serverPort);
         Spark.init();
 
-        new PipeRouteBuilder("/images/:file")
+        PipeRoute.builder("/images/:file")
                 .handle((request, response) -> {
                     String file = request.params("file");
                     if (file == null) Spark.halt(404);
@@ -56,7 +56,7 @@ public class Main {
                     return "";
                 }).buildAndRegister();
 
-        new PipeRouteBuilder("/")
+        PipeRoute.builder("/")
                 .handle(config().index)
                 .buildAndRegister();
 
