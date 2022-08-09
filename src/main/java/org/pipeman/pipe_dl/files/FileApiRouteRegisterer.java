@@ -52,7 +52,6 @@ public class FileApiRouteRegisterer {
                     - write
                     - close
                     - copy files and folders (TODO)
-                    - create folder (TODO)
                      */
 
                     switch (action) {
