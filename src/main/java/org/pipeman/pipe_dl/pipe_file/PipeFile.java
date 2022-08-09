@@ -61,7 +61,7 @@ public class PipeFile extends PipePath {
 
     public PipeFile createChildFolder(String name, long creatorId) {
         long newId = Main.uid.newUID();
-        return new PipeFile(newId, name, pageId(), creatorId, false, 0, addChild(newId));
+        return new PipeFile(newId, name, pageId(), creatorId, true, 0, addChild(newId));
     }
 
     public PipeFile createChildFile(String name, long creatorId, long fileSize) {
